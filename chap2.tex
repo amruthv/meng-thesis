@@ -1,0 +1,55 @@
+\chapter{Electronic Voting Systems and Technologies} \label{evote}
+
+
+\section{Design of End-to-End Voting Systems} \label{evote:design}
+
+
+\subsection{A Secure Bulletin Board} \label{evote:design:sbb}
+
+\subsection{Cast-as-Intended Behavior} \label{evote:design:castasintended}
+
+\subsection{Recorded-as-Cast Behavior} \label{evote:design:recordedascast}
+
+\subsection{Tallied-as-Recorded Behavior} \label{evote:design:talliedasrecorded}
+
+\subsection{Threshold Encryption} \label{evote:design:threshold}
+
+\section{Homomorphic Encryption Schemes} \label{evote:homomorphic}
+
+\subsection{Exponential El Gamal} \label{evote:homomorphic:elgamal}
+
+The exponential El Gamal public-key encryption \cite{elgamal} is one example of a cryptosystem that supports homomorphic encryption.
+\begin{definition}
+\textbf{(Exponential El Gamal)}
+\begin{itemize}
+\item \textbf{Key Generation.} Given a group $G$ with order $q$ and generator $g$, which are public parameters, choose the secret key $k \xleftarrow{R} \{1, \dotsc, q-1\}$ and the public key $y = g^k$.
+\item \textbf{Encryption.} For each plaintext message $m$, select $r \xleftarrow{R} \{1, \dotsc, q-1\}$ and construct the ciphertext $(c_1, c_2) = (g^r, g^m y^r)$.
+\item \textbf{Decryption.} Given a ciphertext $(c_1, c_2)$, calculate
+\begin{align*}
+\log_g\left((c_1^k)^{-1} c_2\right) = \log_g\left(g^{-kr} g^m g^{kr}\right) = m
+\end{align*}
+\item \textbf{Homomorphic Addition of Ciphertexts.} Given two ciphertexts $C_1 = (g^{r_1}, g^{m_1} y^{r_1})$ and $C_2 = (g^{r_2}, g^{m_2} y^{r_2})$, componentwise multiplication yields an encryption of the sum of their underlying plaintexts with randomness $r_1 + r_2$.
+\begin{align*}
+C_1 \times C_2 &= (g^{r_1}, g^{m_1} y^{r_1}) \times (g^{r_2}, g^{m_2} y^{r_2}) \\
+&= (g^{r_1 + r_2}, g^{m_1 + m_2} y^{r_1 + r_2})
+\end{align*}
+\end{itemize}
+\end{definition}
+
+\subsubsection{Tallying and Proof of Decryption}
+
+\subsection{Existing Systems Using Homomorphic Encryption} \label{evote:homomorphic:existing}
+
+\section{Mixnets} \label{evote:mixnets}
+
+\subsection{Decryption and Reencryption Mixnets} \label{evote:mixnets:types}
+
+\section{Conclusion} \label{evote:conclusion}
+
+In this section, we surveyed the many technologies that have been developed for end-to-end verifiable electronic voting systems. We presented the methods used for ensuring verifiable cast-as-intended, recorded-as-cast, and tallied-as-recorded behaviors, including the ``cast or challenge'' protocol, homomorphic tallying with exponential El Gamal, and universally verifiable mixnets. In the next chapter, we present the split-value representation and commitment scheme and show how it may be used in conjunction with a mixnet to achieve end-to-end verifiablity.
+
+
+
+
+
+
