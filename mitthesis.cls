@@ -533,3 +533,7 @@ requirements for the \@degreeword\ of \\
 \def\abstract{\subsection*{Abstract}\small\def\baselinestretch{1}\@normalsize}
 \def\endabstract{\par}
 
+% use algorithmic for code
+\usepackage[noend]{algorithm}
+%\usepackage[noend]{algorithmic}
+\usepackage[noend]{algpseudocode}

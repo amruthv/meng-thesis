@@ -1,12 +1,70 @@
-\chapter{Electronic Voting Systems and Technologies} \label{evote}
+\chapter{Traditional Motion Planning Techniques} \label{planning:techniques}
+In this chapter, we will look at an overview of developments in motion planning in the near history. We will go over their advantages and limitations. As with every motion planner, we are interested in performance at a high level rather than on a small granular level. Since most motion planning algorithms have some randomness, they will likely at some point perform worse than other algorithms.
 
+\section{Rapidly-Exploring Random Trees} \label{planning:rrt}
+The rapidly-exploring random tree (RRT) was proposed by Lavalle in 1998 \textbf{CITATION HERE}. The RRT is a randomized data structure that was designed with as few tunable parameters and heuristics as necessary to work better at the general level. Unlike popular alternatives at the time such as the probabilistic roadmap (PRM), the RRT had the advantage of being efficient for nonholonomic systems. The algorithm procedure from the original RRT paper is shown below.
 
-\section{Design of End-to-End Voting Systems} \label{evote:design}
+{\singlespacing{
+\begin{algorithm}[t]
+\begin{algorithmic}[1]
+\Function{GENERATE\_RRT}{$x_{init}$, $K$, $\Delta t$}
+\State $T$.init($x_{init}$);
+\For{k = 1 to $K$ do}
+\State $x_{rand} \gets$ RANDOM\_STATE();
+\State $x_{near} \gets$ NEAREST\_NEIGHBOR($x_{rand}, T$); 
+\State $u \gets$ SELECT\_INPUT($x_{rand}, x_{near}$);
+\State $x_{new} \gets$ NEW\_STATE($x_{near}, i, \Delta t$);
+\State $T$.add\_vertex($x_{new}$);
+\State $T$.add\_edge($x_{near}, x_{new}, u$);
+\EndFor
+\State Return $T$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+}}
 
+This data structure grows by iteratively sampling from a state space (often configuration space). It then finds the closest data point $x_{near}$ currently in our data structure $T$. The next step encodes the holonomicity of our system, where we can select the input that minimizes the distance between the two states. Then we can apply the chosen input over the interval from $x_{near}$ to find $x_{new}$ that will be added to our tree with an edge from $x_{near}$. To use the RRT in a motion planning scenario where we plan from $x_1$ to $x_2$, we simply instantiate the RRT with $x_{init} = x_1$ and check if $x_{new}$ is sufficiently close to $x_2$. If such an $x_2$ is found, then a path can be reconstructed using $T$.
 
-\subsection{A Secure Bulletin Board} \label{evote:design:sbb}
+The RRT has a couple of nice properties. First, the RRT is more likely to explore unexplored areas in the state space given a good sampling strategy. Second, the distribution in the RRT data structure approaches the sampling distribution as the RRT is grown. The last and arguably most important aspect is that the RRT is probabilistically complete, meaning that the probability that a solution is found approaches 1 as the amount of time spent on the RRT plan increases. A very significant drawback of this algorithm is that this algorithm \emph{cannot} determine that there does not exist a solution. It will try indefinitely to find a solution.
 
-\subsection{Cast-as-Intended Behavior} \label{evote:design:castasintended}
+\subsection{Goal Biased RRT} \label{planning:goal-bias}
+While the aforementioned RRT motion planning algorithm is probabilistically complete, it does not provide any bounds on how \emph{fast} it can find a solution given that one exists. As the name suggests, it just randomly explores the state space. In a motion planning setting we know exactly where we want the planner to go, namely towards the goal. A simple, yet powerful idea that was proposed by ASDFEDAEDASD \textbf{PUT A CITATION HERE} was to modify the sampling strategy to include a goal bias. That is, with some probability $p$ we \"sample\" the goal and with probability $1-p$ we sample from the original strategy. The choice $p$ affects the prioritization of state space exploration versus greedy search. A lower choice $p$ defers to the standard RRT with $p=0$ being exactly the original RRT. A high value of $p$ will try to stretch the current tree towards the goal and guide the expansion since the desired end result is just some path rather than an understanding of the reachability of the entire space.
+
+\subsection{Bi-Directional RRT} \label{planning:birrt}
+The bidirectional RRT method was proposed by  Kuffner and Lavalle in 2005 as a means to speed up the RRT algorithm \url{http://planning.cs.uiuc.edu/node858.html#KufLav05}. It is based on a similar principle as the goal biased RRT in that we can guide the direction of the growth of the RRT. However, instead of growing a single tree, we can instantiate two RRTs and help them grow towards each other. Doing so can help the planner find solutions more quickly, as in the case when there are bug traps in the configuration space \url{http://planning.cs.uiuc.edu/node219.html#sec:genframe}. To encourage the rapidly exploring nature of the RRT, the bi-RRT simply maintains that the difference between tree sizes never gets too large. The algorithm pseudocode is shown below.
+
+{\singlespacing{
+\begin{algorithm}[t]
+\begin{algorithmic}[1]
+\Function{Bidirectional RRT}{$q_s,q_g$}
+\State $T_a$.init($q_s$);
+\State $T_b$.init($q_g$);
+\For{k = 1 to $K$}
+    \State $q_s \gets$ RANDOM\_SAMPLE();
+    \State $q_{near} \gets$ NEAREST($T_a, q_s$);
+    \State $q_n \gets$ STOPPING\_CONFIGURATION($q_{near}, q_s$);
+    \If{$q_{near} \ne q_n$}
+        \State $T_a$.add\_vertex($q_n$);
+        \State $T_a$.add\_edge($q_{near}, q_n$);
+        \State $q_{near}' \gets$ NEAREST($T_b, q_n$);
+        \State $q_n' \gets$ STOPPING\_CONFIGURATION($q_{near}', q_n$);
+        \If{$q_{near}' \ne q_n'$}
+            \State $T_b$.add\_vertex($q_n'$);
+            \State $T_b$.add\_edge($q_{near}', q_n'$);
+        \EndIf
+        \If{$q_n = q_n'$}
+            \State Return SOLUTION;
+        \EndIf
+    \EndIf
+    \If{$|T_a| > |T_b|$}
+        \State SWAP($T_a, T_b$);
+    \EndIf
+\EndFor
+\State Return FAILURE;
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+}}
 
 \subsection{Recorded-as-Cast Behavior} \label{evote:design:recordedascast}
 
@@ -19,37 +77,6 @@
 \subsection{Exponential El Gamal} \label{evote:homomorphic:elgamal}
 
 The exponential El Gamal public-key encryption \cite{elgamal} is one example of a cryptosystem that supports homomorphic encryption.
-\begin{definition}
-\textbf{(Exponential El Gamal)}
-\begin{itemize}
-\item \textbf{Key Generation.} Given a group $G$ with order $q$ and generator $g$, which are public parameters, choose the secret key $k \xleftarrow{R} \{1, \dotsc, q-1\}$ and the public key $y = g^k$.
-\item \textbf{Encryption.} For each plaintext message $m$, select $r \xleftarrow{R} \{1, \dotsc, q-1\}$ and construct the ciphertext $(c_1, c_2) = (g^r, g^m y^r)$.
-\item \textbf{Decryption.} Given a ciphertext $(c_1, c_2)$, calculate
-\begin{align*}
-\log_g\left((c_1^k)^{-1} c_2\right) = \log_g\left(g^{-kr} g^m g^{kr}\right) = m
-\end{align*}
-\item \textbf{Homomorphic Addition of Ciphertexts.} Given two ciphertexts $C_1 = (g^{r_1}, g^{m_1} y^{r_1})$ and $C_2 = (g^{r_2}, g^{m_2} y^{r_2})$, componentwise multiplication yields an encryption of the sum of their underlying plaintexts with randomness $r_1 + r_2$.
-\begin{align*}
-C_1 \times C_2 &= (g^{r_1}, g^{m_1} y^{r_1}) \times (g^{r_2}, g^{m_2} y^{r_2}) \\
-&= (g^{r_1 + r_2}, g^{m_1 + m_2} y^{r_1 + r_2})
-\end{align*}
-\end{itemize}
-\end{definition}
-
-\subsubsection{Tallying and Proof of Decryption}
-
-\subsection{Existing Systems Using Homomorphic Encryption} \label{evote:homomorphic:existing}
-
-\section{Mixnets} \label{evote:mixnets}
-
-\subsection{Decryption and Reencryption Mixnets} \label{evote:mixnets:types}
-
-\section{Conclusion} \label{evote:conclusion}
-
-In this section, we surveyed the many technologies that have been developed for end-to-end verifiable electronic voting systems. We presented the methods used for ensuring verifiable cast-as-intended, recorded-as-cast, and tallied-as-recorded behaviors, including the ``cast or challenge'' protocol, homomorphic tallying with exponential El Gamal, and universally verifiable mixnets. In the next chapter, we present the split-value representation and commitment scheme and show how it may be used in conjunction with a mixnet to achieve end-to-end verifiablity.
-
-
-
 
 
 
