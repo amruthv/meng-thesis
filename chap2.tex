@@ -1,8 +1,23 @@
 \chapter{Traditional Motion Planning Techniques} \label{planning:techniques}
-In this chapter, we will look at an overview of developments in motion planning in the near history. We will go over their advantages and limitations. As with every motion planner, we are interested in performance at a high level rather than on a small granular level. Since most motion planning algorithms have some randomness, they will likely at some point perform worse than other algorithms.
+In this chapter, we will look at an overview of developments in motion planning in the near history. We will go over their advantages and limitations. As with every motion planner, we are interested in performance at a high level rather than on a small granular level. Since most motion planning algorithms have some randomness, they will likely at some point perform worse than other algorithms. We will look at two classes of planners: multi-query and single-query. The planning techniques discussed in this chapter only look for feasible paths -- those without collisions.
 
-\section{Rapidly-Exploring Random Trees} \label{planning:rrt}
-The rapidly-exploring random tree (RRT) was proposed by Lavalle in 1998 \textbf{CITATION HERE}. The RRT is a randomized data structure that was designed with as few tunable parameters and heuristics as necessary to work better at the general level. Unlike popular alternatives at the time such as the probabilistic roadmap (PRM), the RRT had the advantage of being efficient for nonholonomic systems. The algorithm procedure from the original RRT paper is shown below.
+\section{Multi-Query Planners}
+Multi-query planners are planners that are meant to support multiple queries for paths between start and goal configurations in the same environment. That is, that the parameters of the world are unchanging, including the obstacles, their location, and the size of the world. The multiple query nature of the planner means the planner is designed and optimized with the priority of building a data structure that will provide useful regardless of the specified start and goal configurations. This can mean that prior to even computing any paths, the planner must spend time on computation to accumulate this useful information.
+
+\subsection{Probabilistic Roadmap}
+The Probabilistic Roadmap (PRM) is one such multi-query planner. The PRM works in two phases - the learning phase and the query phase, following the model we described above. The learning phase works by initializing a graph $G=(V,E)$ and grows it with a twofold process. 
+
+The first step is the construction step in which we sample points and connect them. Specifically, we sample a random configuration $c$ from free space and add it to $G$. Then using a selection strategy, select some nodes from $V\\c$ to try and connect $c$ to. If the direct path from $c$ to these nodes is collision free, add this edge to $E$. The second step is the expansion step which is used to make sure we have good exploration in \"difficult\" areas. We can do this by sampling points with a distribution proportional to the need to explore each area, which is achieved by some heuristic. Then given one of these vertices, we choose an arbitrary direction and extend in that direction. Whenever an obstacle is hit, we pick another random direction and keep repeating this up to some limit. Finally this final configuration is connected similarly in the construction step. 
+
+By the end of the learning phase, the PRM is ready for querying. The query process is actually quite simple as as soon as a path is found from the specified start and goal configurations to a vertex in $G$ a path can be constructed for the entire trajectory that is already known to be collision free. This is helpful as it can reduce the number of expensive collision checks that need to be done. 
+
+The PRM is an effective method for multi-queries because it leverages the fact that the world does not change so a collision free trajectory at this instant will be collision free at a future time as well. However, this very strength is a limitation as it can't be used efficiently in a planner that moves obstacles as well as the time spent pre-computing trajectories will only be useful that one time and can provide no further benefit.
+
+\section{Single-Query Planners}
+Single query planners are valuable tools in scenarios where we expect the world to change over time, either because obstacles are moving or dynamics of the robot are changing (perhaps the robot is now holding something so a path that didn't have any swept volume collisions now does). The end result is that a particular run of a single-query planner can take longer than the cost of a query on the multi-query planner, so we need a planner that can perform this efficiently. Below we discuss a couple advances made in this sub-field of single-query planners that are still relevant today.
+
+\subsection{Rapidly-Exploring Random Trees} \label{planning:rrt}
+The rapidly-exploring random tree (RRT) was proposed by Lavalle in 1998 \textbf{CITATION HERE}. The RRT is a randomized data structure that was designed with as few tunable parameters and heuristics as necessary to work better at the general level. Unlike popular alternatives at the time such as the probabilistic roadmap (PRM), the RRT had the advantage of being efficient for nonholonomic systems. The algorithm procedure from the original RRT paper is shown below.j
 
 {\singlespacing{
 \begin{algorithm}[t]
@@ -27,10 +42,10 @@ This data structure grows by iteratively sampling from a state space (often conf
 
 The RRT has a couple of nice properties. First, the RRT is more likely to explore unexplored areas in the state space given a good sampling strategy. Second, the distribution in the RRT data structure approaches the sampling distribution as the RRT is grown. The last and arguably most important aspect is that the RRT is probabilistically complete, meaning that the probability that a solution is found approaches 1 as the amount of time spent on the RRT plan increases. A very significant drawback of this algorithm is that this algorithm \emph{cannot} determine that there does not exist a solution. It will try indefinitely to find a solution.
 
-\subsection{Goal Biased RRT} \label{planning:goal-bias}
+\subsubsection{Goal Biased RRT} \label{planning:goal-bias}
 While the aforementioned RRT motion planning algorithm is probabilistically complete, it does not provide any bounds on how \emph{fast} it can find a solution given that one exists. As the name suggests, it just randomly explores the state space. In a motion planning setting we know exactly where we want the planner to go, namely towards the goal. A simple, yet powerful idea that was proposed by ASDFEDAEDASD \textbf{PUT A CITATION HERE} was to modify the sampling strategy to include a goal bias. That is, with some probability $p$ we \"sample\" the goal and with probability $1-p$ we sample from the original strategy. The choice $p$ affects the prioritization of state space exploration versus greedy search. A lower choice $p$ defers to the standard RRT with $p=0$ being exactly the original RRT. A high value of $p$ will try to stretch the current tree towards the goal and guide the expansion since the desired end result is just some path rather than an understanding of the reachability of the entire space.
 
-\subsection{Bi-Directional RRT} \label{planning:birrt}
+\subsubsection{Bi-Directional RRT} \label{planning:birrt}
 The bidirectional RRT method was proposed by  Kuffner and Lavalle in 2005 as a means to speed up the RRT algorithm \url{http://planning.cs.uiuc.edu/node858.html#KufLav05}. It is based on a similar principle as the goal biased RRT in that we can guide the direction of the growth of the RRT. However, instead of growing a single tree, we can instantiate two RRTs and help them grow towards each other. Doing so can help the planner find solutions more quickly, as in the case when there are bug traps in the configuration space \url{http://planning.cs.uiuc.edu/node219.html#sec:genframe}. To encourage the rapidly exploring nature of the RRT, the bi-RRT simply maintains that the difference between tree sizes never gets too large. The algorithm pseudocode is shown below.
 
 {\singlespacing{
@@ -65,18 +80,5 @@ The bidirectional RRT method was proposed by  Kuffner and Lavalle in 2005 as a m
 \end{algorithmic}
 \end{algorithm}
 }}
-
-\subsection{Recorded-as-Cast Behavior} \label{evote:design:recordedascast}
-
-\subsection{Tallied-as-Recorded Behavior} \label{evote:design:talliedasrecorded}
-
-\subsection{Threshold Encryption} \label{evote:design:threshold}
-
-\section{Homomorphic Encryption Schemes} \label{evote:homomorphic}
-
-\subsection{Exponential El Gamal} \label{evote:homomorphic:elgamal}
-
-The exponential El Gamal public-key encryption \cite{elgamal} is one example of a cryptosystem that supports homomorphic encryption.
-
 
 
