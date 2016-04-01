@@ -1,10 +1,13 @@
-\chapter{Traditional Motion Planning Techniques} \label{planning:techniques}
-In this chapter, we will look at an overview of developments in motion planning in the near history. We will go over their advantages and limitations. As with every motion planner, we are interested in performance at a high level rather than on a small granular level. Since most motion planning algorithms have some randomness, they will likely at some point perform worse than other algorithms. We will look at two classes of planners: multi-query and single-query. The planning techniques discussed in this chapter only look for feasible paths -- those without collisions.
+\chapter{Existing Motion Planning Techniques}
+In this chapter, we will look at an overview of developments in motion planning in the near history. We will go over their advantages and limitations. As with every motion planner, we are interested in performance at a high level rather than on a small granular level. Since most motion planning algorithms have some randomness, they will with some probability at some point perform worse than other algorithms. 
 
-\section{Multi-Query Planners}
+\section{Traditional Non-Constraint Violating Motion Planning Techniques} \label{planning:techniques}
+We will look at two classes of traditional planners: multi-query and single-query. The planning techniques discussed in this chapter only look for feasible paths -- those without collisions.
+
+\subsection{Multi-Query Planners}
 Multi-query planners are planners that are meant to support multiple queries for paths between start and goal configurations in the same environment. That is, that the parameters of the world are unchanging, including the obstacles, their location, and the size of the world. The multiple query nature of the planner means the planner is designed and optimized with the priority of building a data structure that will provide useful regardless of the specified start and goal configurations. This can mean that prior to even computing any paths, the planner must spend time on computation to accumulate this useful information.
 
-\subsection{Probabilistic Roadmap}
+\subsubsection{Probabilistic Roadmap}
 The Probabilistic Roadmap (PRM) is one such multi-query planner. The PRM works in two phases - the learning phase and the query phase, following the model we described above. The learning phase works by initializing a graph $G=(V,E)$ and grows it with a twofold process. 
 
 The first step is the construction step in which we sample points and connect them. Specifically, we sample a random configuration $c$ from free space and add it to $G$. Then using a selection strategy, select some nodes from $V\\c$ to try and connect $c$ to. If the direct path from $c$ to these nodes is collision free, add this edge to $E$. The second step is the expansion step which is used to make sure we have good exploration in \"difficult\" areas. We can do this by sampling points with a distribution proportional to the need to explore each area, which is achieved by some heuristic. Then given one of these vertices, we choose an arbitrary direction and extend in that direction. Whenever an obstacle is hit, we pick another random direction and keep repeating this up to some limit. Finally this final configuration is connected similarly in the construction step. 
@@ -13,10 +16,10 @@ By the end of the learning phase, the PRM is ready for querying. The query proce
 
 The PRM is an effective method for multi-queries because it leverages the fact that the world does not change so a collision free trajectory at this instant will be collision free at a future time as well. However, this very strength is a limitation as it can't be used efficiently in a planner that moves obstacles as well as the time spent pre-computing trajectories will only be useful that one time and can provide no further benefit.
 
-\section{Single-Query Planners}
+\subsection{Single-Query Planners}
 Single query planners are valuable tools in scenarios where we expect the world to change over time, either because obstacles are moving or dynamics of the robot are changing (perhaps the robot is now holding something so a path that didn't have any swept volume collisions now does). The end result is that a particular run of a single-query planner can take longer than the cost of a query on the multi-query planner, so we need a planner that can perform this efficiently. Below we discuss a couple advances made in this sub-field of single-query planners that are still relevant today.
 
-\subsection{Rapidly-Exploring Random Trees} \label{planning:rrt}
+\subsubsection{Rapidly-Exploring Random Trees} \label{planning:rrt}
 The rapidly-exploring random tree (RRT) was proposed by Lavalle in 1998 \textbf{CITATION HERE}. The RRT is a randomized data structure that was designed with as few tunable parameters and heuristics as necessary to work better at the general level. Unlike popular alternatives at the time such as the probabilistic roadmap (PRM), the RRT had the advantage of being efficient for nonholonomic systems. The algorithm procedure from the original RRT paper is shown below.j
 
 {\singlespacing{
@@ -81,4 +84,118 @@ The bidirectional RRT method was proposed by  Kuffner and Lavalle in 2005 as a m
 \end{algorithm}
 }}
 
+\section{MCR}
+In this section we will describe the Minimum Constraint Removal (MCR) algorithm as formulated by Hauser. The discussion that follows draws heavily from Hauser's description [CITE HAUSER HERE]. MCR is the first algorithm we discuss that handles tolerating collisions while searching for paths. We go into a more extensive description and analysis of MCR as we are interested in what shortcomings this algorithm has such that it cannot meet our requirements.
+
+\subsection{Formal Problem Statement}
+Hauser offers two formulations of the MCR problem: one in continuous configuration space and one in discrete configurations space. Because working in continuous configuration space is intractable and there is a provable reduction from the continuous MCR problem to the discrete, we will only talk about the latter. \\
+
+\noindent 
+{\bf{Discrete-MCR Problem:}}\\
+Input: Graph $G = (V,E)$, Cover Function $C[v]$, $s,g \in V$  \\
+Output: $S^{*}_g$
+\newline
+
+The MCR problem statement assumes that a graph $G$ of configurations $q \in V$ already exists with predefined edges $e \in E$ between them. The cover C[q] of a configuration q is the subset of of obstacles \{1,2,3,...,m\} with which the robot collides with if placed at the configuration $q$. Let $S_q$ be the cover (possibly optimal) of the path from $s \rightarrow q$. $S^{*}$ is the answer the the MCR problem, that is the minimum number of obstacles that can be in collision with the robot while following some path p[t], t:[0,1], from a start configuration $s$ to a goal configuration $g$. Thus $S^{*} = S^{*}_g$. $S^{*}$ is defined as the minimum constraint removal and is the cover along this minimum collision path. 
+
+The difficulty of this problem falls into the class of NP-hard problems (the proof can be seen in Hauser's paper) so sacrificing exact correctness for an algorithm that runs fast in practice for most situations is critical. 
+
+\subsection{Methods of Solving the MCR Problem}
+Hauser proposed two types of solutions employing classic search techniques: an exact search method (best first search) and a close approximation that should generally run faster (greedy search).
+
+\subsubsection{Best First Search}
+This method is guaranteed to eventually find $S^{*}$. In this method, states are tuples of configuration and covers $(v, S_v)$, where $S_v$ is the cover of some path from $s \rightarrow v$. There are many such tuples for every node $v$ in the graph. We search through the graph beginning with the start node and perform best-first search using the size of the covers as the distance metric. Naturally, for two vertices $a, b$ and expanding from $a$ to $b$ we set $S_b = S_a \bigcup C[b]$. Because we always maintain all possible covers for each vertex, we guarantee that the minimum constraint removal will be found. In fact since each configuration can have $2^m$ different covers, the total state space is $O(|E|2^m)$, making this approach infeasible.
+
+\subsection{Greedy Search}
+Greedy search operates much in the way that Best First Search does except in the enumeration of states. Rather than keeping all possible $2^m$ covers per node, we instead only maintain a cover that has the lowest size cover. When we expand the graph from $a$ to $b$, we re-evaluate the minimum cover $S_b$ and then update the covers of the neighbors of $b$ as necessary. Since each node is now only expanded once, the runtime is now reduced to $O(|E|m)$. In fact, if for all $O_i \in S_g$, $O_i$'s presence in the cover of the path forms a connected subsequence, $S_g = S^{*}_g$. This will often be the case -- greedy search is often as good as exact search.
+
+\subsection{MCR Planner Details}
+\subsubsection{Approximating Connectivity}
+In the prior discussion, we assumed that we were already provided a graph $G$ consisting of vertices of configurations for a robot. In practice, we must construct this ourselves. We want $G$ to accurately approximate the connectivity of the configuration space, where connectivity is a function of how collision-free the space is. That is, the less cluttered the configuration (sub)space is, the more connected the space is. To formalize this notion of reachability we use $(G,k)$ reachability.
+
+{\bf{Definition}}: A node $q$ is $(G,k)$ reachable if there is a path from some start node $s$ to $q$ with a cover at most $k$. 
+
+The MCR planner grows $G$ in the fashion of a probabilistic road map (PRM). We repeatedly sample points randomly in our configuration space and attempt to connect them to nearby points specified by some distance metric [2]. We also incorporate techniques from rapidly exploring random graphs (RRGs) which prioritizes rapid exploration of $(G,k)$ reachable space. Specifically, when sampling a point and looking for points to connect it to, we consider only those that are $(G,k)$ reachable. This ensures that we are expanding from the \emph{exploration limit}. This way we can expand the connectivity of our $(G,k)$ reachable space. The combination of these techniques improves the connectivity of $G$ and the approximation of the real connectivity.  
+
+By examining the psueodocode below, we see that we increment $k$ every $N_{raise}$ steps ($N_{raise}$ can be chosen as needed based on the size of the problem). This ensures that we get good connectivity for a particular exploration limit before trying to search for less accessible configurations. Having good connectivity for lower $k$ helps improve the accuracy of the approximation to the real connectivity. 
+
+\subsubsection{Weighted MCR}
+The weighted MCR problem can be trivially extended from the original formulation by defining the minimum constraint removal to the minimum sum of weights for obstacles in the cover of a best path from the start to goal configuration. We can further emulate immovable obstacles by assigning them "infinite" weight such that the MCR planner will never plan a path through these obstacles if possible. 
+
+\subsubsection{Implementation Specifics}
+Below we include Hauser's pseudocode outlining the general MCR procedure and the Expand-Roadmap procedure. The other procedures are specific to our implementation of this planner. Following is a discussion of some interesting points.
+
+
+%\begin{figure}[H]
+{\singlespacing{
+\begin{algorithm}[t]
+\begin{algorithmic}[1]
+\Function{MCR}{}
+\State $S_{min} \gets$ EdgeCover($q_s, q_g$) 
+\State $k \gets |$Cover$(q_s) \bigcup$ Cover$(q_g)|$ 
+\State $G \equiv (V,E) \gets ({q_s \rightarrow q_g})$
+\For{N = 1,2,... repeat:}
+\State Expand-Roadmap$(G,k)$ 
+\State Compute the minimum explanations $S_G(q)$ for all $q \in V$
+\State $S_{min} \gets S_g$
+\State Every $N_{raise}$ step, $k \gets k + 1$
+\If{$k \ge |S_{min}|$}
+    \State $k \gets |S_{min}| - 1$
+\EndIf
+\EndFor
+\EndFunction
+\\
+\Function{Expand-Roadmap}{$G,k$}
+\State $q_d \gets Sample()$
+\State Let $q_n \gets$ Closest$(G,k, q_d)$
+\State $q \gets Extend-Toward(q_n, q_d, \delta, k)$
+\State Let ${q_1, q_2, ..., q_n} \gets$ Neighbors$(G,q)$
+\For {$i = 1,2,....n$}
+\If{$d(q_i,q) < \delta$}
+\State Add $q_i \rightarrow q$ to $E$
+\EndIf
+\EndFor
+\EndFunction
+\\
+\Function{Closest}{$G,k,q}$
+\State Return $\argmin\limits_{q_i \in V} d(q, q_i)$
+\EndFunction
+\\
+\Function{Neighbors}{$G,q$}
+\State $Distances \gets []$
+\For {$i = 1,2, ..., |V|$}
+\State $Distances \gets Distances + [(d(q, q_i), i)]$
+\EndFor
+\State Sort($Distances$)
+\State Return first $m$ neighbors in $Distances$
+\EndFunction
+\\
+\Function{Extend-Toward}{$q_i, q, \delta, k$}
+\State $q' \gets q_i + min(\frac{\delta}{d(q_i, q)}, 1)(q- q_i)$
+\While{$BisectionCount < BisectionLimit$ and $|S_q \bigcup Cover(q')| > k$}
+\State $q' \gets \frac{1}{2}(q' + q)$
+\EndWhile
+\State Return $q'$ if $|S_q \bigcup Cover(q')| <= k$ else $None$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+}}
+%\end{figure}
+
+The MCR algorithm follows a straightforward loop. In the initialization, we compute an upper bound on $S^{*}_g$. Clearly this is true as $S^{*}_g$ can be no worse than the straight path from $s \rightarrow g$. Next we set $k$ to the union of the covers at $s$ and $g$ since this is at most the initial $S_{min}$ value. Then we initialize our graph and begin the task of growing and measuring connectivity in lines 5-13. 
+
+The subroutine Expand-Roadmap first generates a random configuration $q_d$. It then finds the closest $(G,k)$ reachable node $q_n$. Similar to RRT growth, we  extend $q_n$ towards $q_d$ up to some distance tolerance $\delta$ [2]. If this new configuration $q'$ isn't within the $k$ exploration limit, we scale the $q_n \rightarrow q'$ vector by  half and check again. If by the bisection limit, we haven't found a point within the $k$ frontier, we abandon and restart the for loop of MCR. Note that in the pseudocode, we assume that there are no cover changes along an edge (we assume that we have computed partitions of the space), but in practice this will involve a call to EdgeCover. Now that we have a new vertex $q'$ to add to $G$, we choose neighbor candidates. As mentioned before, we incorporate the RRT strategy and connect it up to $m$ of the nearest configurations as long as they are at most $\delta$ away [2]. By construction in Extend-Toward, we know that at least one neighbor will be within $\delta$ ($q_n$). 
+
+Finally, given our expanded graph, we can compute the minimum explanations, the minimum $(G,k)$ reachabilities, for all nodes. This is exactly the procedure described in section 3.2. Since speed is primarily what we are concerned with (at the cost of complete correctness), we use the greedy method. Consequently, we replace Hauser's update definition to $S_{min}$ in line 8 to simply $S_g$ since there is now only a single explanation for $g$. 
+
+While we increment $k$ every $N_{raise}$ steps, we cap it to be one less than $S_{min}$, as it does not make sense to raise our exploration limit higher than what we know we need. 
+
+While the algorithm seems simple, there are some subtleties that help it succeed. We have emphasized the importance of respecting the exploration limit $k$. When we look for candidate nodes to connect a sample to, we only consider those that are $(G,k)$ reachable since we want to improve our estimation of the connectivity of $(G,k)$ reachable space. However, the next procedure Neighbors($G,q$) doesn't consider $k$. This seems to be inconsistent with the goal of maintaining the $k$ frontier, as we would now connect $q'$ to nodes that are not necessarily contained within the limit. However, this is essential to \emph{improving} the $(G,k)$ reachability in the update step in line 7. Consider Figure 1 below. 
+
+In this MCR instance we have a start configuration shown on the left and the goal configuration on the right of the obstacle. Clearly there exists a collision free path by moving above the obstacle and then back down (that is $S^{*} = \{\}$). However, in the algorithm we initialize $S_{min} = 1$ and $k=0$ since both $s$ and $g$ are collision free. Node $s$ has a cover of 0, while $g$ has a cover of 1 (the path $s \rightarrow g$). When we sample a point in free space and find the nearest $(G,0)$ reachable node ($s$), we extend toward the sampled point and then collect the nearest neighbors ($s$ and $g$). However, if we only added edges to those that were $(G,0)$ reachable, we would \emph{not} add the edge to $g$ making $g$ $(G,0)$ reachable instead of $(G,1)$ reachable in our update stage. This would continue to infinity leading us to believe that it is impossible to reach $g$ without going through our obstacle. Instead we must allow edges to go to nodes that are not currently $(G,k)$ reachable because they may in fact need these edges to \emph{become} $(G,k)$ reachable.
+
+\subsection{MCR benefits and disadvantages}
+The MCR algorithm succeeds where traditional planning fails. RRTs and other strategies can search forever looking for a path from a start configuration to a goal configuration. Until such a path is found, there is no deliverable progress. MCR does not suffer from this weakness. MCR is instead an \emph{any-time} algorithm, meaning the algorithm can be terminated at any point and the minimum cover path thus far can be reconstructed. The accompanying downside is that in many cases where the weight of the best cover path is not equal the weight of the union of the two covers at the start and goal configurations, it becomes unclear that you can terminate instead of continuing to iterate. This is in fact a problem of looking for paths that tolerate some collisions -- more often that not, the best possible cover path is not known a priori. We instead must assume that after some period of looking for better paths, if none is found there is no better path.
+
+Another difficulty the MCR algorithm faces is in its frontier expansion strategy. If the best path from the start to goal configurations must go through a cover of high weight $w_h$ then until the MCR algorithm goes through $N_raise * w_h$ expansion steps this path can never be found. In fact, if we were to enumerate all possible unique covers, any $k$s considered between these values are unhelpful to finding paths. It helps to build a more dense graph, but this dense graph can be limited in its distribution across the configuration space and, depending on the dsitribution of obstacle weights, may spend excessive time developing these frontiers.
 
