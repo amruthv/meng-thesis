@@ -537,3 +537,6 @@ requirements for the \@degreeword\ of \\
 \usepackage[noend]{algorithm}
 %\usepackage[noend]{algorithmic}
 \usepackage[noend]{algpseudocode}
+\usepackage{amsmath}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
