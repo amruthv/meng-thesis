@@ -8,9 +8,24 @@
 An essential component in autonomous robotics is a planner. These invisible systems are used to make sense of the task to be performed. This involves an encoding of the world (including objects in the world and the dynamics of the physical robot). 
 
 
-\section{A Brief History of Voting Systems} \label{intro:history}
+\section{Planners} \label{intro:planners}
+\begin{itemize}
+    \item Motivate importance of planners and their use (autonomous systems)
+    \item Talk about traditional planners (task + motion) that work in the realm of feasible plans
+\end{itemize}
 
-\section{The Rise of Electronic Voting} \label{intro:evoting}
+\section{Shortcomings of Some Planners} \label{intro:shortcomings}
+\begin{itemize}
+    \item Unfortunately, not everything as is in the world sets up the robot for success (need to tolerate some errors to be fixed in the future)
+    \item Motivate importance of a planner that fails because it can't figure out to modify existing world
+    \item Discuss impact of over aggressively introducing violations costing planner to take much longer and the tradeoff there
+\end{itemize}
 
-\section{Conclusion} \label{intro:conclusion}
+\section{Research Problem Statement} \label{intro:statement}
+\begin{itemize}
+    \item Two contributions: algorithms and a algorithm specifically for use in HPN
+    \item Develop algorithms for path planning that are robust to the feasibility of worlds
+    \item Given algorithms, choose one that works best in the case that worlds are generally free. Find the free paths instead of collision paths if they exist else find a  good path
+    \item Formulate some measure of goodness
+\end{itemize}
 
