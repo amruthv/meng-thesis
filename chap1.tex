@@ -14,19 +14,18 @@ The component of a robot responsible for determining the actions to take is its 
 
 These two types of planners work together to come up with the complete plan. Because the task planner is involved with deciding on tasks, it can be thought of as the high level planning component, while the motion planner is involved at a micro scale dealing with finding a series of movements to accomplish the task. Traditional motion planners only look for feasible paths, paths that do not have any constraint violations, or collisions, with objects in the world. That is, for motion planners to succeed, they usually require that the planning problem passed to them is already in a constrained world such that there exists some feasible path. 
 
-\section{Shortcomings of Some Planners} \label{intro:shortcomings}
+\section{Shortcomings of Traditional Planners} \label{intro:shortcomings}
+While traditional motion planners are adept at handling the case that they were intended for, they aren't robust to situations where no feasible path actually exists. If the task planner passes a planning problem to the motion planner with no feasible path, traditional motion planners will inevitably fail. Consequently this delegates the entire responsibility of configuring the world in a way that the motion planner can succeed to the task planner. However, these motion planners don't provide information as to why they were unable to find a path -- the task planner must then try to infer the reason for failure or randomly search actions that enable the motion planner to succeed.
 
-\begin{itemize}
-    \item Unfortunately, not everything as is in the world sets up the robot for success (need to tolerate some errors to be fixed in the future)
-    \item Motivate importance of a planner that fails because it can't figure out to modify existing world
-    \item Discuss impact of over aggressively introducing violations costing planner to take much longer and the tradeoff there
-\end{itemize}
+Instead, in the event that there did not exist a feasible path, if the motion planner were able to return paths that made some minimal number of collisions, then the task planner could plan around the information that a path exists if these violations were moved out of the way. This inter-component communication would then lead to an overall speed up of planners and make them more robust to world settings and difficulty in planning problems.
+
+However, such a motion planner could introduce overall performance penalties if it was overly-aggressive in tolerating collisions with obstacles. Since the task planner uses the collisions provided to inform its further decisions if the motion planner needlessly introduces new collisions, these new collisions would have to be removed leading to performance losses in solving those sub-planning problems. The planner must be careful in paths that it finds.
 
 \section{Research Problem Statement} \label{intro:statement}
+In the rest of this paper we will focus on the problem of motion planning algorithms that are tolerant of collisions. This research will provide a number of algorithms that can be used to solve this problem. These algorithms offer different tradeoffs in running time and quality of paths as measured by collisions. These algorithms may see use in different scenarios.
+
+We will look for an algorithm that performs well in problems that have feasible paths (that are largely collision free). This is the most common scenario that a robot will encounter, so an algorithm that performs well in this scenario is critical. That is, it should not introduce collisions when it does not need to. It must be able to support collisions in the less frequent world where a collision free path does not exist, but be selective to approximate ignoring the minimal number of obstacles.
 \begin{itemize}
-    \item Two contributions: algorithms and a algorithm specifically for use in HPN
-    \item Develop algorithms for path planning that are robust to the feasibility of worlds
-    \item Given algorithms, choose one that works best in the case that worlds are generally free. Find the free paths instead of collision paths if they exist else find a  good path
-    \item Formulate some measure of goodness
+    \item Formulate some measure of goodness?
 \end{itemize}
 
