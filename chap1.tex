@@ -5,16 +5,17 @@
 %% \files=
 %% prompt when you run the file main.tex through LaTeX.
 \chapter{Introduction} \label{intro}
-An essential component in autonomous robotics is a planner. These invisible systems are used to make sense of the task to be performed. This involves an encoding of the world (including objects in the world and the dynamics of the physical robot). 
+Robotic systems are becoming increasingly commercial (e.g. the Roomba, self driving cars) yet the field of robotics is far from having completely autonomous robots. There is still room for improvement in such a way as to handle tasks and operate with assistance. A robotic system is only useful when using the aforementioned systems are easier to use than having a human had do the task or even be tightly coupled with the robot's performance.
 
+Having a robot identify a series of actions to perform to accomplish a goal is a challenging task. The robot requires a good encoding of the world (representing the constraints of the world), its own dynamics, as well as a method for translating any decisions the robot decides to make into physical actions that it can impart into the world. Other difficulty can lay in the actual search problem of identifying the symbolic sequence of actions to take that would result in the desired outcome. This can be further complicated with uncertainty in the world as well as error in actual execution of any actions changing the expected resulting states.
 
 \section{Planners} \label{intro:planners}
-\begin{itemize}
-    \item Motivate importance of planners and their use (autonomous systems)
-    \item Talk about traditional planners (task + motion) that work in the realm of feasible plans
-\end{itemize}
+The component of a robot responsible for determining the actions to take is its planner. These invisible systems are used to make sense of the task to be performed. This usually involves two components - settling on an order of tasks that need to be performed (e.g. lift block A, put down block B) that can modify the external state of the world as well the exact movements needed to carry out these tasks. The first component is handled by a task planner while the second is handled by a motion planner. 
+
+These two types of planners work together to come up with the complete plan. Because the task planner is involved with deciding on tasks, it can be thought of as the high level planning component, while the motion planner is involved at a micro scale dealing with finding a series of movements to accomplish the task. Traditional motion planners only look for feasible paths, paths that do not have any constraint violations, or collisions, with objects in the world. That is, for motion planners to succeed, they usually require that the planning problem passed to them is already in a constrained world such that there exists some feasible path. 
 
 \section{Shortcomings of Some Planners} \label{intro:shortcomings}
+
 \begin{itemize}
     \item Unfortunately, not everything as is in the world sets up the robot for success (need to tolerate some errors to be fixed in the future)
     \item Motivate importance of a planner that fails because it can't figure out to modify existing world
