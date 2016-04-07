@@ -15,7 +15,7 @@ Note that all of the RRT variants are actually bi-RRT variants but for concisene
 In this section we will describe a simple alternative to the traditional RRT that enables it to find paths that tolerate collisions. In particular this algorithm favors finding some path very quickly and does not prioritize minimizing the total path cover. We will shorthand this planner as OIRRT (obstacle ignorant RRT).
 
 \subsection{OIRRT Details}
-The OIRRT is in essence a simpler version of the bi-directional RRT. In fact, the implementation is nearly identical. Consult the description of the RRT available TODO(INSERT REFERENCE TO ABOVE SECTION). We maintain two trees as Lavalle proposed while adding goal biasing for both trees. The only difference occurs in the tree growing phase where we will add the sampled node to its respective tree regardless of any collisions. The OIRRT is thus ignorant of any obstacles in the world until the two trees meet at which point the cover of the trajectory can be returned to the higher level planner. OIRRTs can be thought of as upfront constraint removal -- that is anytime a constraint would be violated, we simply remove them as we did in the MCR algorithm. 
+The OIRRT is in essence a simpler version of the bi-directional RRT. In fact, the implementation is nearly identical. Consult the description of the RRT available \todo{add ref}. We maintain two trees as Lavalle proposed while adding goal biasing for both trees. The only difference occurs in the tree growing phase where we will add the sampled node to its respective tree regardless of any collisions. The OIRRT is thus ignorant of any obstacles in the world until the two trees meet at which point the cover of the trajectory can be returned to the higher level planner. OIRRTs can be thought of as upfront constraint removal -- that is anytime a constraint would be violated, we simply remove them as we did in the MCR algorithm. 
 
 \subsection{OIRRT benefits and disadvantages}
 A clear deficiency of the OIRRT is that it likely will not find a minimum cover path. In fact it likely will return a path that is not "close" to the optimal cover path either, as it merely explores the space randomly and returns the first full path it finds.
@@ -92,10 +92,12 @@ While removing obstacles that are collided with the most helps find a path, it i
 
 \subsection{Notion of Memory Factor}
 
-\subsection{Greedy Iterative Obstacle Removal}
+\subsection{Constraint Removal Strategy}
+\subsubsection{Greedy Removal}
+\subsubsection{Probabilistic Removal}
 
 \subsection{Probabilistic Iterative Obstacle Removal}
-Given the framework of an iterative obstacle removal RRT, 
+
 
 \section{Repeated Iterative Obstacle Removal RRTs}
 

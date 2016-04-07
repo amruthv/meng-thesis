@@ -22,10 +22,18 @@ Instead, in the event that there did not exist a feasible path, if the motion pl
 However, such a motion planner could introduce overall performance penalties if it was overly-aggressive in tolerating collisions with obstacles. Since the task planner uses the collisions provided to inform its further decisions if the motion planner needlessly introduces new collisions, these new collisions would have to be removed leading to performance losses in solving those sub-planning problems. The planner must be careful in paths that it finds.
 
 \section{Research Problem Statement} \label{intro:statement}
-In the rest of this paper we will focus on the problem of motion planning algorithms that are tolerant of collisions. This research will provide a number of algorithms that can be used to solve this problem. These algorithms offer different tradeoffs in running time and quality of paths as measured by collisions. These algorithms may see use in different scenarios.
+The particular problem we will be addressing in the paper is the Minimum Constraint Removal (MCR) problem as formulated by Kris Hauser \todo{cite Hauser}.
 
-We will look for an algorithm that performs well in problems that have feasible paths (that are largely collision free). This is the most common scenario that a robot will encounter, so an algorithm that performs well in this scenario is critical. That is, it should not introduce collisions when it does not need to. It must be able to support collisions in the less frequent world where a collision free path does not exist, but be selective to approximate ignoring the minimal number of obstacles.
-\begin{itemize}
-    \item Formulate some measure of goodness?
-\end{itemize}
+\noindent
+{\bf{Discrete-MCR Problem:}}\\
+Input: Graph $G = (V,E)$, Cover Function $C[v]$, $s,g \in V$  \\
+Output: $S^{*}_g$
+\newline
 
+The MCR problem statement assumes that a graph $G$ of configurations $q \in V$ already exists with predefined edges $e \in E$ between them. The cover $C[q]$ of a configuration $q$ is the subset of of obstacles \{1,2,3,...,m\} with which the robot collides with if placed at the configuration $q$. Let $S_q$ be the cover (possibly optimal) of the path from $s \rightarrow q$. $S^{*}$ is the answer the the MCR problem, that is the minimum number of obstacles that can be in collision with the robot while following some path p[t], t:[0,1], from a start configuration $s$ to a goal configuration $g$. Thus $S^{*} = S^{*}_g$. $S^{*}$ is defined as the minimum constraint removal and is the cover along this minimum collision path. 
+
+The difficulty of this problem falls into the class of NP-hard problems (the proof can be seen in Hauser's paper). Since computing the precise answer is impractical, we instead must look for an algorithm that runs quickly in practice for most situations and finds a good (not perfect) answer in practice.
+
+In the rest of this paper we will focus on a number of algorithms that can be used to find paths that support constraint violations. Note that these algorithms will not always find the $MCR$ solution. Each of these algorithms will offer different tradeoffs in running time and quality of paths as measured by collisions.
+
+Because solving the MCR problem is impractical, we will look for an algorithm that performs well in scenarios that are most common, worlds that have feasible paths (e.g. that are largely collision free). That is, it should not introduce collisions when it does not need to. It must be able to support collisions in the less frequent world where a collision free path does not exist, but be selective to approximate the real MCR.
