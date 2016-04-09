@@ -24,8 +24,9 @@ The rapidly-exploring random tree (RRT) was proposed by Lavalle in 1998 \todo{ad
 
 {\singlespacing{
 \begin{algorithm}[t]
+\caption{RRT}
 \begin{algorithmic}[1]
-\Function{GENERATE\_RRT}{$x_{init}$, $K$, $\Delta t$}
+\Function{Generate RRT}{$x_{init}$, $K$, $\Delta t$}
 \State $T$.init($x_{init}$);
 \For{k = 1 to $K$ do}
 \State $x_{rand} \gets$ \Call{Random State}{};
@@ -53,8 +54,9 @@ The bidirectional RRT method was proposed by  Kuffner and Lavalle in 2005 as a m
 
 {\singlespacing{
 \begin{algorithm}[t]
+\caption{Bidirectional RRT}
 \begin{algorithmic}[1]
-\Function{Bidirectional RRT}{$q_s,q_g$}
+\Function{ConstructBiRRT}{$q_s,q_g$}
 \State $T_a$.init($q_s$);
 \State $T_b$.init($q_g$);
 \For{k = 1 to $K$}
@@ -116,6 +118,7 @@ Below we include Hauser's pseudocode outlining the general MCR procedure and the
 %\begin{figure}[H]
 {\singlespacing{
 \begin{algorithm}[t]
+\caption{Minimum Constraint Removal Algorithm}
 \begin{algorithmic}[1]
 \Function{MCR}{}
 \State $S_{min} \gets$ \Call{EdgeCover}{$q_s, q_g$} 

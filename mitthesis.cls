@@ -534,9 +534,12 @@ requirements for the \@degreeword\ of \\
 \def\endabstract{\par}
 
 % use algorithmic for code
-\usepackage[noend]{algorithm}
+\usepackage{algorithm}
 %\usepackage[noend]{algorithmic}
 \usepackage[noend]{algpseudocode}
 \usepackage{amsmath}
 \DeclareMathOperator*{\argmin}{argmin}
 \DeclareMathOperator*{\argmax}{argmax}
+
+\usepackage{booktabs}
+\renewcommand{\arraystretch}{1.2} 

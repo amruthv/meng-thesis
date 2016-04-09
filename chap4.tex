@@ -1,10 +1,30 @@
 \chapter{Experimental Results}
+\todo{Is it even worth putting in RRT performance no one uses vanilla RRTs...}
 In this chapter we will review the performance of our various algorithms on different types of worlds. These world showcase various scenarios that a motion planner may be presented with. 
 \section{Worlds with Feasible Paths}
 The following section is dedicated to worlds that are more common. These are worlds for which there exists a path from a start configuration to a goal configuration without needing to tolerate any collisions. We will look at two such examples: one that is mostly free space, and one that has many obstacles.
 
 \subsection{Simple Minimal Obstacle World}
-The first world of this type can be seen in Figure \ref{fig:common_world}.
+The first world of this type can be seen in Figure \ref{fig:feasible_world}.
+
+\begin{table}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+\midrule
+RRT & 19 & 3.95 & 2.48 & 5561.92 & 0.0 \\ 
+Bidirectional RRT & 100 & 0.00 & 0.96 & 5432.94 & 0.0 \\
+Greedy IOR-RRT & 100 & 0.00 & 0.79 & 5116.33 & 1.4 \\
+Probabilistic IOR-RRT & 100 & 0.00 & 0.83 & 5099.30 & 2.8 \\
+OIRRT & 100 & 0.00 & 0.54 & 4710.94 & 10.2 \\
+Repeated IOR-RRT & 100 & 0.00 & 7.77 & 4653.65 & 0.0 \\
+Single Search IOR-RRT & 100 & 0.00 & 1.35 & 5570.78 & 0.1 \\
+Repeated Search IOR-RRT & aa & aa & aa & aa & aa \\
+\bottomrule
+\end{tabular}
+\caption{Algorithm Performance on Minimal Obstacle World}
+\label{tab:feasible_world}
+\end{table}
 
 \begin{figure}[h]
     \centering
@@ -15,6 +35,25 @@ The first world of this type can be seen in Figure \ref{fig:common_world}.
 
 \subsection{Cluttered World With Free Path}
 
+\begin{table}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+\midrule
+RRT & 3 & 2.76 & 2.28 & 7795.35 & 0 \\
+Bidirectional RRT & 52 & 9.75 & 4.75 & 8676.26 & 0.00 \\
+Greedy IOR-RRT & 100 & 0.00 & 2.94 & 9048.46 & 6.34 \\
+Probabilistic IOR-RRT & 100 & 0.00 & 2.53 & 8693.80 & 11.54 \\
+OIRRT & 100 & 0.00 & 0.91 & 6477.88 & 22.78 \\
+Repeated IOR-RRT & 100 & 0.00 & 25.11 & 8653.24 & 1.28 \\
+Single Search IOR-RRT & 100 & 0.00 & 4.29 & 9196.23 & 2.53 \\
+Repeated Search IOR-RRT & aa & aa & aa & aa & aa \\
+\bottomrule
+\end{tabular}
+\caption{Algorithm Performance on Many Obstacles Feasible World}
+\label{tab:many_obstacles_feasible_world}
+\end{table}
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{many_obstacles_feasible_world}
@@ -24,7 +63,27 @@ The first world of this type can be seen in Figure \ref{fig:common_world}.
 
 \section{Worlds with Nonexistent Collision Free Paths}
 
-\subsection{Two Soda Can World}
+\subsection{Two Block World}
+
+\begin{table}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+\midrule
+RRT & 0 & 0.83 & 0.00 & 0.00 & 0.00 \\
+Bidirectional RRT & 0 & 4.31 & 0.00 & 0.00 & 0.00 \\
+Greedy IOR-RRT & 100 & 0.00 & 1.40 & 5151.30 & 2.00 \\
+Probabilistic IOR-RRT & 100 & 0.00 & 1.36 & 5076.79 & 2.57 \\
+OIRRT & 100 & 0.00 & 0.61 & 4718.62 & 10.94 \\
+Repeated IOR-RRT & 100 & 0.00 & 14.06 & 5221.01 & 1.00 \\
+Single Search IOR-RRT & 100 & 0.00 & 4.58 & 5314.93 & 1.55 \\
+Repeated Search IOR-RRT & aa & aa & aa & aa & aa \\
+\bottomrule
+\end{tabular}
+\caption{Algorithm Performance on Two Block Unfeasible World}
+\label{tab:two_soda_world}
+\end{table}
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{two_soda_world}
@@ -33,6 +92,26 @@ The first world of this type can be seen in Figure \ref{fig:common_world}.
 \end{figure}
 
 \subsection{Almost Feasible Path World (MCR shines)}
+
+\begin{table}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+\midrule
+RRT & 0 & 2.92 & 0.00 & 0.00 & 0.00 \\
+Bidirectional RRT & 0 & 3.48 & 0.00 & 0.00 & 0.00 \\
+Greedy IOR-RRT & 100 & 0.00 & 1.97 & 7175.5 & 19.75 \\
+Probabilistic IOR-RRT & 100 & 0.00 & 2.40 & 7454.49 & 20.33 \\
+OIRRT & 100 & 0.00 & 1.05 & 6614.65 & 26.52 \\
+Repeated IOR-RRT & 100 & 0.00 & 22.99 & 8620.46 & 8.45 \\
+Single Search IOR-RRT & 100 & 0.00 & 2.57 & 7354.78 & 20.09 \\
+Repeated Search IOR-RRT & aa & aa & aa & aa & aa \\
+\bottomrule
+\end{tabular}
+\caption{Algorithm Performance on Many Obstacles Unfeasible World}
+\label{tab:many_obstacles_unfeasible_world}
+\end{table}
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth]{many_obstacles_unfeasible_world}
@@ -49,6 +128,25 @@ The first world of this type can be seen in Figure \ref{fig:common_world}.
 \end{figure}
 \subsubsection{IterCount = 150}
 \subsubsection{IterCount = 200}
+\begin{table}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+\midrule
+RRT & 0 & 0.96 & 0.00 & 0.00 & 0.00 \\
+Bidirectional RRT & 0 & 4.80 & 0.00 & 0.00 & 0.00 \\
+Greedy IOR-RRT & 100 & 0.00 & 4.11 & 4656.24 & 16.30 \\
+Probabilistic IOR-RRT & 100 & 0.00 & 5.36 & 4927.45 & 20.09 \\
+OIRRT & 100 & 0.00 & 1.40 & 5187.00 & 55.08 \\
+Repeated IOR-RRT & 100 & 0.00 & 52.81 & 4617.88 & 15.96 \\
+Single Search IOR-RRT & 100 & 0.00 & 8.66 & 4603.05 & 16.25 \\
+Repeated Search IOR-RRT & aa & aa & aa & aa & aa \\
+\bottomrule
+\end{tabular}
+\caption{Algorithm Performance on Cluttered World (With Greedy MCR Path)}
+\label{tab:cluttered_world}
+\end{table}
+
 
 \subsection{Cluttered World with Non-Greedy Minimum Cover Path}
 \begin{figure}[h]
@@ -59,6 +157,24 @@ The first world of this type can be seen in Figure \ref{fig:common_world}.
 \end{figure}
 \subsubsection{IterCount = 150}
 \subsubsection{IterCount = 200}
+\begin{table}
+\begin{tabular}{@{}llllll@{}}
+\toprule
+Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+\midrule
+RRT & 0 & 0.93 & 0.00 & 0.00 & 0.00 \\
+Bidirectional RRT & 0 & 4.58 & 0.00 & 0.00 & 0.00 \\
+Greedy IOR-RRT & 100 & 0.00 & 4.10 & 5189.46 & 25.15 \\
+Probabilistic IOR-RRT & 100 & 0.00 & 5.45 & 5412.72 & 24.28 \\
+OIRRT & 100 & 0.00 & 1.34 & 5222.05 & 59.07 \\
+Repeated IOR-RRT & 100 & 0.00 & 50.29 & 5860.71 & 14.75 \\
+Single Search IOR-RRT & 100 & 0.00 & 9.04 & 5414.53 & 25.13 \\
+Repeated Search IOR-RRT & aa & aa & aa & aa & aa \\
+\bottomrule
+\end{tabular}
+\caption{Algorithm Performance on Cluttered World (With Non-Greedy MCR Path)}
+\label{tab:top_light_cluttered_world}
+\end{table}
 
 \section{Discussion on Memory Factor Impact}
 \subsection{Non Memory Factor Worlds Results Showing No Impact On Cover}
