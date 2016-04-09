@@ -26,29 +26,29 @@ This algorithm has some interesting properties, however. If we were interested i
 This section explores the concept of iterative constraint removal via RRTs (IOR-RRT). The previous section on OIRRTs were immediate on constraint removal. As a result these constraint removals were largely uninformed -- specifically they were informed from a single data point (a collision with this constraint in tree growth). We propose two variants of iterative constraint removal that accumulate information of the state of the world and then proceed to perform constraint removal.
 
 \subsection{Details}
-This family ofalgorithms proceeds similarly to the bidirectional RRT algorithm. The general algorithm is outlined below.
-
+This family of algorithms proceeds similarly to the bidirectional RRT algorithm. The general algorithm is outlined below.
+\todo{Figure out spacing of function arguments that are in math mode vs not}
 {\singlespacing{
 \begin{algorithm}[t]
 \begin{algorithmic}[1]
 \Function{Iterative Obstacle Removing RRT}{$q_s,q_g$}
-    \State $violation\_counts \gets \{\}$
-    \State $permitted\_viols \gets set()$
+    \State counts $\gets$ \{\}
+    \State permitted $\gets$ set()
     \State $T_a$.init($q_s$);
     \State $T_b$.init($q_g$);
     \For{$k$ = 1 to $K$}
-        \If {$k$ \% REMOVAL\_FREQUENCY = 0}
-            \State REMOVE\_CONSTRAINT();
+        \If {$k$ \% $f$ = 0}
+            \State \Call{Remove Constraint}{counts,permitted,$memory$};
         \EndIf
-        \State $q_s \gets$ RANDOM\_SAMPLE();
-        \State $q_{near} \gets$ NEAREST($T_a, q_s$);
-        \State $success, q_n \gets$ ATTEMPT\_EXTEND($q_{near}, q_s, violation\_counts, permitted\_viols$);
-        \If{success and $q_{near} \ne q_n$}
+        \State $q_s \gets$ \Call{Random Sample}{};
+        \State $q_{near} \gets$ \Call{Nearest}{$T_a, q_s$};
+        \State success,$q_n \gets$ \Call{Attempt Extend}{$q_{near}, q_s$,counts,permitted};
+        \If{success AND $q_{near} \ne q_n$}
             \State $T_a$.add\_vertex($q_n$);
             \State $T_a$.add\_edge($q_{near}, q_n$);
-            \State $q_{near}' \gets$ NEAREST($T_b, q_n$);
-            \State $success', q_n' \gets$ ATTEMPT\_EXTEND($q_{near}', q_n, permitted\_viols$);
-            \If{success' and $q_{near}' \ne q_n'$}
+            \State $q_{near}' \gets$ \Call{Nearest}{$T_b, q_n$};
+            \State $success', q_n' \gets$ \Call{Attempt Extend}{$q_{near}', q_n$,permitted};
+            \If{success' AND $q_{near}' \ne q_n'$}
                 \State $T_b$.add\_vertex($q_n'$);
                 \State $T_b$.add\_edge($q_{near}', q_n'$);
             \EndIf
@@ -57,25 +57,33 @@ This family ofalgorithms proceeds similarly to the bidirectional RRT algorithm. 
             \EndIf
         \EndIf
         \If{$|T_a| > |T_b|$}
-            \State SWAP($T_a, T_b$);
+            \State \Call{SWAP}{$T_a, T_b$};
         \EndIf
     \EndFor
     \State Return FAILURE;
 \EndFunction
 
-\Function{ATTEMPT\_EXTEND}{$q_1, q_2, violation\_counts, permitted\_viols$}
-    \For{$q \in$ INTERPOLATE($q_1, q_2$)}
-        \State $viols \gets$ COLLISIONS($q$)
-        \If{$viols \not\subseteq permitted\_viols$}
-            \For{$viol \in viols$}
-                \If{$viol \not\in permitted\_viols$}
-                    \State $violation\_counts[viol] += 1$
+\Function{Attempt Extend}{$q_1, q_2$,counts,permitted}
+    \For{$q \in$ \Call{Interpolate}{$q_1, q_2$}
+        \State viols $\gets$ \Call{Collisions}{$q$};
+        \If{viols $\not\subseteq$ permitted}
+            \For{viol $\in$ viols}
+                \If{viol $\not\in$ permitted}
+                    \State counts[viol] += 1
                 \EndIf
             \EndFor
             \State Return FAILURE, NONE
         \EndIf
     \EndFor
-    \State Return SUCCESS, $q_2$
+    \State Return SUCCESS,$q_2$
+\EndFunction
+
+\Function{Remove Constraint}{counts, permitted, $memory$}
+    \State $c \gets$ \Call{Removal Strategy}{counts, permitted};
+    \State permitted.add($c$);
+    \For{viol $\in$ counts}
+        \State counts[viol] $\ast= memory$;
+    \EndFor
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -83,20 +91,30 @@ This family ofalgorithms proceeds similarly to the bidirectional RRT algorithm. 
 
 The algorithm attempts to grow a bi-directional RRT as the original algorithm does. A significant difference is upon colliding with an obstacle on interpolation between two configurations, the algorithm stores memory of this collision. Once a collision is found and its presence marked, the extend immediately fails and we return to the growth loop of the RRT. 
 
-This type of constraint removal introduces a new parameter $REMOVAL\_FREQUENCY$ that governs how often we will choose a constraint to ignore. In turn this affects the number of constraint violations that can be recorded before selecting an obstacle to ignore. If the number of iterations that the iterative obstacle removal RRT is bounded by $K$, then at most $c=\frac{K}{REMOVAL\_FREQUENCY}$ obstacles will be removed. If our motion planning problem is unsolvable with ignoring $c$ constraints, then this algorithm can never find a solution. Thus fragility can be a problem in worlds where setting an upper bound on the number of obstacles that need to be removed can be determined.
+This type of constraint removal introduces a new parameter $f$ that governs how often we will choose a constraint to ignore. In turn this affects the number of constraint violations that can be recorded before selecting an obstacle to ignore. If the number of iterations that the iterative obstacle removal RRT is bounded by $K$, then at most $c=\frac{K}{f}$ obstacles will be removed. If our motion planning problem is unsolvable with ignoring $c$ constraints, then this algorithm can never find a solution. Thus fragility can be a problem in worlds where setting an upper bound on the number of obstacles that need to be removed can be determined.
 
 \subsection{Collision History as an Indicator to Removal Importance}
 The family of iterative obstacle removal RRTs are designed around finding a path quickly while attempting to mitigate the number of obstacles that must be removed to find such a path. Because we are interested in avoiding excessive obstacle removal, we need a signal on the importance of an obstacle in this goal. Using the collision history in practice works as this good signal. Intuitively, the more frequently an obstacle is run into, the more likely a path will be found by removing this obstacle.
 
 While removing obstacles that are collided with the most helps find a path, it is not the case that an obstacle must be removed to find a path. In worlds that have solution with small tolerance for movement in the surrounding swept volume, it can be difficult for a bi-directional RRT to find this path ($P$). Given enough time, the bi-directional RRT can find $P$, while an iterative obstacle removal RRT will simply select an obstacle to remove allowing for more tolerance in the region surrounding $P$.
 
-\subsection{Notion of Memory Factor}
-
 \subsection{Constraint Removal Strategy}
+Every $REMOVAL\_FREQUENCY$ iterations we select a new constraint that can be violated as needed. Below we propose two strategies for choosing this constraint: greedy removal and probabilistic removal.
 \subsubsection{Greedy Removal}
-\subsubsection{Probabilistic Removal}
+This method of removal chooses the constraint to remove that is empirically determined to be a constraint of importance. Specifically, let the mapping of obstacles to collision counts be noted as pairs of $(o, c_o)$. Each of these obstacles has a weight $w_o$. We then select the constraint using the formula:
 
-\subsection{Probabilistic Iterative Obstacle Removal}
+$$\argmax\limits_{o \in O} \frac{c_o}{w_o}$$
+
+This selects the constraint that has the highest importance score -- the collision counts scaled by the inverse of the weight of the obstacle. Thus a heavy obstacle requires more collisions to be selected while a lighter obstacle needs less. This method encodes the difficulty associated with moving high weight obstacles as well as pushes the algorithm to lighter obstacles in the goal of approximating the true MCR solution.
+
+
+\subsubsection{Probabilistic Removal}
+The probabilistic removal method introduces an additional layer of randomness in the iterative obstacle removing family of RRTs. Unlike the greedy removal strategy, the probabilistic removal strategy selects the constraint to remove using the distribution generated over the importance scores. Specifically,
+$$o_{remove} \sim \frac{1}{\sum_{i=1}^k \frac{c_i}{w_1}}[\frac{c_1}{w_1}, \frac{c_2}{w_2},\ldots, \frac{c_k}{w_k}]$$
+
+This method allows the motion planner to select obstacles outside those that are deemed the most important. Instead we can sample on the importance in the pursuit of being more robust to adversarial worlds where the obstacles that appear promising for removal may actually be either useless or result in higher total covers than is necessary. 
+
+\subsection{Notion of Memory Factor}
 
 
 \section{Repeated Iterative Obstacle Removal RRTs}

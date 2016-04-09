@@ -28,10 +28,10 @@ The rapidly-exploring random tree (RRT) was proposed by Lavalle in 1998 \todo{ad
 \Function{GENERATE\_RRT}{$x_{init}$, $K$, $\Delta t$}
 \State $T$.init($x_{init}$);
 \For{k = 1 to $K$ do}
-\State $x_{rand} \gets$ RANDOM\_STATE();
-\State $x_{near} \gets$ NEAREST\_NEIGHBOR($x_{rand}, T$); 
-\State $u \gets$ SELECT\_INPUT($x_{rand}, x_{near}$);
-\State $x_{new} \gets$ NEW\_STATE($x_{near}, i, \Delta t$);
+\State $x_{rand} \gets$ \Call{Random State}{};
+\State $x_{near} \gets$ \Call{Nearest}{$x_{rand}, T$}; 
+\State $u \gets$ \Call{Select Input}{$x_{rand}, x_{near}$};
+\State $x_{new} \gets$ \Call{New State}{$x_{near}, i, \Delta t$};
 \State $T$.add\_vertex($x_{new}$);
 \State $T$.add\_edge($x_{near}, x_{new}, u$);
 \EndFor
@@ -58,14 +58,14 @@ The bidirectional RRT method was proposed by  Kuffner and Lavalle in 2005 as a m
 \State $T_a$.init($q_s$);
 \State $T_b$.init($q_g$);
 \For{k = 1 to $K$}
-    \State $q_s \gets$ RANDOM\_SAMPLE();
-    \State $q_{near} \gets$ NEAREST($T_a, q_s$);
-    \State $q_n \gets$ STOPPING\_CONFIGURATION($q_{near}, q_s$);
+    \State $q_s \gets$ \Call{Random Sample}{};
+    \State $q_{near} \gets$ \Call{Nearest}{$T_a, q_s$};
+    \State $q_n \gets$ \Call{Stopping Configuration}{$q_{near}, q_s$};
     \If{$q_{near} \ne q_n$}
         \State $T_a$.add\_vertex($q_n$);
         \State $T_a$.add\_edge($q_{near}, q_n$);
-        \State $q_{near}' \gets$ NEAREST($T_b, q_n$);
-        \State $q_n' \gets$ STOPPING\_CONFIGURATION($q_{near}', q_n$);
+        \State $q_{near}' \gets$ \Call{Nearest}{$T_b, q_n$};
+        \State $q_n' \gets$ \Call{Stopping Configuration}{$q_{near}', q_n$};
         \If{$q_{near}' \ne q_n'$}
             \State $T_b$.add\_vertex($q_n'$);
             \State $T_b$.add\_edge($q_{near}', q_n'$);
@@ -112,17 +112,17 @@ The weighted MCR problem can be trivially extended from the original formulation
 \subsubsection{Implementation Specifics}
 Below we include Hauser's pseudocode outlining the general MCR procedure and the Expand-Roadmap procedure. The other procedures are specific to our implementation of this planner. Following is a discussion of some interesting points.
 
-
+\todo{Figure out semicolons...?}
 %\begin{figure}[H]
 {\singlespacing{
 \begin{algorithm}[t]
 \begin{algorithmic}[1]
 \Function{MCR}{}
-\State $S_{min} \gets$ EdgeCover($q_s, q_g$) 
+\State $S_{min} \gets$ \Call{EdgeCover}{$q_s, q_g$} 
 \State $k \gets |$Cover$(q_s) \bigcup$ Cover$(q_g)|$ 
 \State $G \equiv (V,E) \gets ({q_s \rightarrow q_g})$
 \For{N = 1,2,... repeat:}
-\State Expand-Roadmap$(G,k)$ 
+\State \Call{Expand Roadmap}{$G,k$}
 \State Compute the minimum explanations $S_G(q)$ for all $q \in V$
 \State $S_{min} \gets S_g$
 \State Every $N_{raise}$ step, $k \gets k + 1$
@@ -132,11 +132,11 @@ Below we include Hauser's pseudocode outlining the general MCR procedure and the
 \EndFor
 \EndFunction
 \\
-\Function{Expand-Roadmap}{$G,k$}
+\Function{Expand Roadmap}{$G,k$}
 \State $q_d \gets Sample()$
-\State Let $q_n \gets$ Closest$(G,k, q_d)$
-\State $q \gets Extend-Toward(q_n, q_d, \delta, k)$
-\State Let ${q_1, q_2, ..., q_n} \gets$ Neighbors$(G,q)$
+\State Let $q_n \gets$ \Call{Closest}{$G,k, q_d$}
+\State $q \gets$ \Call{Extend Toward}{$q_n, q_d, \delta, k$}
+\State Let ${q_1, q_2, ..., q_n} \gets$ \Call{Neighbors}{$G,q$}
 \For {$i = 1,2,....n$}
 \If{$d(q_i,q) < \delta$}
 \State Add $q_i \rightarrow q$ to $E$
@@ -157,7 +157,7 @@ Below we include Hauser's pseudocode outlining the general MCR procedure and the
 \State Return first $m$ neighbors in $Distances$
 \EndFunction
 \\
-\Function{Extend-Toward}{$q_i, q, \delta, k$}
+\Function{Extend Toward}{$q_i, q, \delta, k$}
 \State $q' \gets q_i + min(\frac{\delta}{d(q_i, q)}, 1)(q- q_i)$
 \While{$BisectionCount < BisectionLimit$ and $|S_q \bigcup Cover(q')| > k$}
 \State $q' \gets \frac{1}{2}(q' + q)$
