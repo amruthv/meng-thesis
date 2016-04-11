@@ -49,7 +49,7 @@ The RRT has a couple of nice properties. First, the RRT is more likely to explor
 \subsubsection{Goal Biased RRT} \label{planning:goal-bias}
 While the aforementioned RRT motion planning algorithm is probabilistically complete, it does not provide any bounds on how \emph{fast} it can find a solution given that one exists. As the name suggests, it just randomly explores the state space. In a motion planning setting we know exactly where we want the planner to go, namely towards the goal. A simple, yet powerful idea that was proposed by \todo{add ref} was to modify the sampling strategy to include a goal bias. That is, with some probability $p$ we "sample" the goal and with probability $1-p$ we sample from the original strategy. The choice $p$ affects the prioritization of state space exploration versus greedy search. A lower choice $p$ defers to the standard RRT with $p=0$ being exactly the original RRT. A high value of $p$ will try to stretch the current tree towards the goal and guide the expansion since the desired end result is just some path rather than an understanding of the reachability of the entire space.
 
-\subsubsection{Bi-Directional RRT} \label{planning:birrt}
+\subsubsection{Bidirectional RRT} \label{planning:birrt}
 The bidirectional RRT method was proposed by  Kuffner and Lavalle in 2005 as a means to speed up the RRT algorithm \url{http://planning.cs.uiuc.edu/node858.html#KufLav05}. It is based on a similar principle as the goal biased RRT in that we can guide the direction of the growth of the RRT. However, instead of growing a single tree, we can instantiate two RRTs and help them grow towards each other. Doing so can help the planner find solutions more quickly, as in the case when there are bug traps in the configuration space \url{http://planning.cs.uiuc.edu/node219.html#sec:genframe} \todo{cite}. To encourage the rapidly exploring nature of the RRT, the bi-RRT simply maintains that the difference between tree sizes never gets too large. The algorithm pseudocode is shown below.
 
 {\singlespacing{
@@ -124,7 +124,7 @@ Below we include Hauser's pseudocode outlining the general MCR procedure and the
 \State $S_{min} \gets$ \Call{EdgeCover}{$q_s, q_g$} 
 \State $k \gets |$Cover$(q_s) \bigcup$ Cover$(q_g)|$ 
 \State $G \equiv (V,E) \gets ({q_s \rightarrow q_g})$
-\For{N = 1,2,... repeat:}
+\While{iteration count < $N_{raise} \times (S_{min} + tolerance)$}
 \State \Call{Expand Roadmap}{$G,k$}
 \State Compute the minimum explanations $S_G(q)$ for all $q \in V$
 \State $S_{min} \gets S_g$
@@ -132,7 +132,7 @@ Below we include Hauser's pseudocode outlining the general MCR procedure and the
 \If{$k \ge |S_{min}|$}
     \State $k \gets |S_{min}| - 1$
 \EndIf
-\EndFor
+\EndWhile
 \EndFunction
 \\
 \Function{Expand Roadmap}{$G,k$}
@@ -185,7 +185,7 @@ While the algorithm seems simple, there are some subtleties that help it succeed
 In this MCR instance we have a start configuration shown on the left and the goal configuration on the right of the obstacle. Clearly there exists a collision free path by moving above the obstacle and then back down (that is $S^{*} = \{\}$). However, in the algorithm we initialize $S_{min} = 1$ and $k=0$ since both $s$ and $g$ are collision free. Node $s$ has a cover of 0, while $g$ has a cover of 1 (the path $s \rightarrow g$). When we sample a point in free space and find the nearest $(G,0)$ reachable node ($s$), we extend toward the sampled point and then collect the nearest neighbors ($s$ and $g$). However, if we only added edges to those that were $(G,0)$ reachable, we would \emph{not} add the edge to $g$ making $g$ $(G,0)$ reachable instead of $(G,1)$ reachable in our update stage. This would continue to infinity leading us to believe that it is impossible to reach $g$ without going through our obstacle. Instead we must allow edges to go to nodes that are not currently $(G,k)$ reachable because they may in fact need these edges to \emph{become} $(G,k)$ reachable.
 
 \subsection{MCR benefits and disadvantages}
-The MCR algorithm succeeds where traditional planning fails. RRTs and other strategies can search forever looking for a path from a start configuration to a goal configuration. Until such a path is found, there is no deliverable progress. MCR does not suffer from this weakness. MCR is instead an \emph{any-time} algorithm, meaning the algorithm can be terminated at any point and the minimum cover path thus far can be reconstructed. The accompanying downside is that in many cases where the weight of the best cover path is not equal the weight of the union of the two covers at the start and goal configurations, it becomes unclear that you can terminate instead of continuing to iterate. This is in fact a problem of looking for paths that tolerate some collisions -- more often that not, the best possible cover path is not known a priori. We instead must assume that after some period of looking for better paths, if none is found there is no better path.
+The MCR algorithm succeeds where traditional planning fails. RRTs and other strategies can search forever looking for a path from a start configuration to a goal configuration. Until such a path is found, there is no deliverable progress. MCR does not suffer from this weakness. MCR is instead an \emph{any-time} algorithm, meaning the algorithm can be terminated at any point and the minimum cover path thus far can be reconstructed. The accompanying downside is that in many cases where the weight of the best cover path is equal the weight of the union of the two covers at the start and goal configurations, it is not clear that one can terminate instead of continuing to iterate. This is in fact a problem of looking for paths that tolerate some collisions -- more often that not, the cover of some best path is not known a priori. We instead must assume that after some period of looking for better paths, if none is found there is no better path. For this reason we modify the original formulation of MCR by Hauser which runs indefinitely to run for a number of iterations that is an increasing linear function of the best path cover found thus far.
 
 Another difficulty the MCR algorithm faces is in its frontier expansion strategy. If the best path from the start to goal configurations must go through a cover of high weight $w_h$ then until the MCR algorithm goes through $N_raise * w_h$ expansion steps this path can never be found. In fact, if we were to enumerate all possible unique covers, any $k$s considered between these values are unhelpful to finding paths. It helps to build a more dense graph, but this dense graph can be limited in its distribution across the configuration space and, depending on the dsitribution of obstacle weights, may spend excessive time developing these frontiers.
 
