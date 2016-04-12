@@ -17,51 +17,51 @@ This section explores the concept of iterative constraint removal via RRTs (IOR-
 
 \subsection{Details}
 This family of algorithms proceeds similarly to the bidirectional RRT algorithm. The general algorithm is outlined below.
-\todo{Figure out spacing of function arguments that are in math mode vs not}
+\todo{Figure out if want text named variables italicizesd}
 {\singlespacing{
 \begin{algorithm}[h!]
 \caption{Iterative Obstacle Removing RRT}
 \label{IORRT}
 \begin{algorithmic}[1]
 \Function{IterativeRemoval}{$q_s,q_g$}
-    \State counts $\gets$ \{\}
-    \State permitted $\gets$ set()
-    \State $T_a$.init($q_s$);
-    \State $T_b$.init($q_g$);
+    \State $counts \gets$ \{\}
+    \State $permitted \gets$ set()
+    \State $T_a$.init($q_s$)
+    \State $T_b$.init($q_g$)
     \For{$k$ = 1 to $K$}
         \If {$k$ \% $f$ = 0}
-            \State \Call{Remove Constraint}{counts,permitted,memory};
+            \State \Call{Remove Constraint}{$counts,permitted,memory$}
         \EndIf
-        \State $q_s \gets$ \Call{Random Sample}{};
-        \State $q_{near} \gets$ \Call{Nearest}{$T_a, q_s$};
-        \State success,$q_n \gets$ \Call{Attempt Extend}{$q_{near}, q_s$,counts,permitted};
-        \If{success AND $q_{near} \ne q_n$}
-            \State $T_a$.add\_vertex($q_n$);
-            \State $T_a$.add\_edge($q_{near}, q_n$);
-            \State $q_{near}' \gets$ \Call{Nearest}{$T_b, q_n$};
-            \State $success', q_n' \gets$ \Call{Attempt Extend}{$q_{near}', q_n$,permitted};
+        \State $q_s \gets$ \Call{Random Sample}{}
+        \State $q_{near} \gets$ \Call{Nearest}{$T_a, q_s$}
+        \State $success,q_n \gets$ \Call{Attempt Extend}{$q_{near}, q_s,counts,permitted$}
+        \If{$success$ AND $q_{near} \ne q_n$}
+            \State $T_a$.add\_vertex($q_n$)
+            \State $T_a$.add\_edge($q_{near}, q_n$)
+            \State $q_{near}' \gets$ \Call{Nearest}{$T_b, q_n$}
+            \State $success', q_n' \gets$ \Call{Attempt Extend}{$q_{near}', q_n,permitted$}
             \If{success' AND $q_{near}' \ne q_n'$}
-                \State $T_b$.add\_vertex($q_n'$);
-                \State $T_b$.add\_edge($q_{near}', q_n'$);
+                \State $T_b$.add\_vertex($q_n'$)
+                \State $T_b$.add\_edge($q_{near}', q_n'$)
             \EndIf
             \If{$q_n = q_n'$}
-                \State Return SOLUTION;
+                \State Return SOLUTION
             \EndIf
         \EndIf
         \If{$|T_a| > |T_b|$}
-            \State \Call{SWAP}{$T_a, T_b$};
+            \State \Call{SWAP}{$T_a, T_b$}
         \EndIf
     \EndFor
-    \State Return FAILURE;
+    \State Return FAILURE
 \EndFunction
 
-\Function{Attempt Extend}{$q_1, q_2$,counts,permitted}
+\Function{Attempt Extend}{$q_1, q_2,counts,permitted$}
     \For{$q \in$ \Call{Interpolate}{$q_1, q_2$}
-        \State viols $\gets$ \Call{Collisions}{$q$};
-        \If{viols $\not\subseteq$ permitted}
-            \For{viol $\in$ viols}
-                \If{viol $\not\in$ permitted}
-                    \State counts[viol] += 1
+        \State $viols \gets$ \Call{Collisions}{$q$}
+        \If{$viols \not\subseteq permitted$}
+            \For{$viol \in viols$}
+                \If{$viol \not\in permitted$}
+                    \State $counts[viol] += 1$
                 \EndIf
             \EndFor
             \State Return FAILURE, NONE
@@ -70,11 +70,11 @@ This family of algorithms proceeds similarly to the bidirectional RRT algorithm.
     \State Return SUCCESS,$q_2$
 \EndFunction
 
-\Function{Remove Constraint}{counts,permitted,memory}
-    \State $c \gets$ \Call{Removal Strategy}{counts, permitted};
-    \State permitted.add($c$);
-    \For{viol $\in$ counts}
-        \State counts[viol] $\ast=$ memory;
+\Function{Remove Constraint}{$counts,permitted,memory$}
+    \State $c \gets$ \Call{Removal Strategy}{$counts,permitted$}
+    \State $permitted$.add($c$)
+    \For{$viol \in counts$}
+        \State $counts[viol] \ast= memory$
     \EndFor
 \EndFunction
 \end{algorithmic}

@@ -22,7 +22,8 @@ Instead, in the event that there did not exist a feasible path, if the motion pl
 However, such a motion planner could introduce overall performance penalties if it was overly-aggressive in tolerating collisions with obstacles. Since the task planner uses the collisions provided to inform its further decisions if the motion planner needlessly introduces new collisions, these new collisions would have to be removed leading to performance losses in solving those sub-planning problems. The planner must be careful in paths that it finds.
 
 \section{Research Problem Statement} \label{intro:statement}
-The particular problem we will be addressing in the paper is the Minimum Constraint Removal (MCR) problem as formulated by Kris Hauser \todo{cite Hauser}.
+The particular problem we will be addressing in the paper is the Minimum Constraint Removal (MCR) problem as formulated by Kris Hauser \cite{hauser:mcr}
+\newline
 
 \noindent
 {\bf{Discrete-MCR Problem:}}\\

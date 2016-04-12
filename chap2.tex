@@ -8,9 +8,9 @@ We will look at two classes of traditional planners: multi-query and single-quer
 Multi-query planners are planners that are meant to support multiple queries for paths between start and goal configurations in the same environment. That is, that the parameters of the world are unchanging, including the obstacles, their location, and the size of the world. The multiple query nature of the planner means the planner is designed and optimized with the priority of building a data structure that will provide useful regardless of the specified start and goal configurations. This can mean that prior to even computing any paths, the planner must spend time on computation to accumulate this useful information.
 
 \subsubsection{Probabilistic Roadmap}
-The Probabilistic Roadmap (PRM) is one such multi-query planner. The PRM works in two phases - the learning phase and the query phase, following the model we described above. The learning phase works by initializing a graph $G=(V,E)$ and grows it with a twofold process. 
+The Probabilistic Roadmap (PRM) is one such multi-query planner \cite{kavraki:prm}. The PRM works in two phases - the learning phase and the query phase, following the model we described above. The learning phase works by initializing a graph $G=(V,E)$ and grows it with a twofold process. 
 
-The first step is the construction step in which we sample points and connect them. Specifically, we sample a random configuration $c$ from free space and add it to $G$. Then using a selection strategy, select some nodes from $V\\c$ to try and connect $c$ to. If the direct path from $c$ to these nodes is collision free, add this edge to $E$. The second step is the expansion step which is used to make sure we have good exploration in "difficult" areas. We can do this by sampling points with a distribution proportional to the need to explore each area, which is achieved by some heuristic. Then given one of these vertices, we choose an arbitrary direction and extend in that direction. Whenever an obstacle is hit, we pick another random direction and keep repeating this up to some limit. Finally this final configuration is connected similarly in the construction step. 
+The first step is the construction step in which we sample points and connect them. Specifically, we sample a random configuration $c$ from free space and add it to $G$. Then using a selection strategy, select some nodes from $V$ to try and connect $c$ to. If the direct path from $c$ to each of these nodes is collision free, add this edge to $E$. The second step is the expansion step which is used to make sure we have good exploration in "difficult" areas. We can do this by sampling points with a distribution proportional to the need to explore each area, which is achieved by some heuristic. Then given one of these vertices, we choose an arbitrary direction and extend in that direction. Whenever an obstacle is hit, we pick another random direction and keep repeating this up to some limit. Finally this final configuration is connected similarly in the construction step. 
 
 By the end of the learning phase, the PRM is ready for querying. The query process is actually quite simple as as soon as a path is found from the specified start and goal configurations to a vertex in $G$ a path can be constructed for the entire trajectory that is already known to be collision free. This is helpful as it can reduce the number of expensive collision checks that need to be done. 
 
@@ -20,21 +20,21 @@ The PRM is an effective method for multi-queries because it leverages the fact t
 Single query planners are valuable tools in scenarios where we expect the world to change over time, either because obstacles are moving or dynamics of the robot are changing (perhaps the robot is now holding something so a path that didn't have any swept volume collisions now does). The end result is that a particular run of a single-query planner can take longer than the cost of a query on the multi-query planner, so we need a planner that can perform this efficiently. Below we discuss a couple advances made in this sub-field of single-query planners that are still relevant today.
 
 \subsubsection{Rapidly-Exploring Random Trees} \label{planning:rrt}
-The rapidly-exploring random tree (RRT) was proposed by Lavalle in 1998 \todo{add ref}. The RRT is a randomized data structure that was designed with as few tunable parameters and heuristics as necessary to work better at the general level. Unlike popular alternatives at the time such as the probabilistic roadmap (PRM), the RRT had the advantage of being efficient for nonholonomic systems. The algorithm procedure from the original RRT paper is shown below.
+The rapidly-exploring random tree (RRT) was proposed by Lavalle in 1998 \cite{lavalle:rrt}. The RRT is a randomized data structure that was designed with as few tunable parameters and heuristics as necessary to work better at the general level. Unlike popular alternatives at the time such as the probabilistic roadmap (PRM), the RRT had the advantage of being efficient for nonholonomic systems. The algorithm procedure from the original RRT paper is shown below.
 
 {\singlespacing{
 \begin{algorithm}[t]
 \caption{RRT}
 \begin{algorithmic}[1]
 \Function{Generate RRT}{$x_{init}$, $K$, $\Delta t$}
-\State $T$.init($x_{init}$);
+\State $T$.init($x_{init}$)
 \For{k = 1 to $K$ do}
-\State $x_{rand} \gets$ \Call{Random State}{};
-\State $x_{near} \gets$ \Call{Nearest}{$x_{rand}, T$}; 
-\State $u \gets$ \Call{Select Input}{$x_{rand}, x_{near}$};
-\State $x_{new} \gets$ \Call{New State}{$x_{near}, i, \Delta t$};
-\State $T$.add\_vertex($x_{new}$);
-\State $T$.add\_edge($x_{near}, x_{new}, u$);
+\State $x_{rand} \gets$ \Call{Random State}{}
+\State $x_{near} \gets$ \Call{Nearest}{$x_{rand}, T$}
+\State $u \gets$ \Call{Select Input}{$x_{rand}, x_{near}$}
+\State $x_{new} \gets$ \Call{New State}{$x_{near}, i, \Delta t$}
+\State $T$.add\_vertex($x_{new}$)
+\State $T$.add\_edge($x_{near}, x_{new}, u$)
 \EndFor
 \State Return $T$
 \EndFunction
@@ -50,44 +50,44 @@ The RRT has a couple of nice properties. First, the RRT is more likely to explor
 While the aforementioned RRT motion planning algorithm is probabilistically complete, it does not provide any bounds on how \emph{fast} it can find a solution given that one exists. As the name suggests, it just randomly explores the state space. In a motion planning setting we know exactly where we want the planner to go, namely towards the goal. A simple, yet powerful idea that was proposed by \todo{add ref} was to modify the sampling strategy to include a goal bias. That is, with some probability $p$ we "sample" the goal and with probability $1-p$ we sample from the original strategy. The choice $p$ affects the prioritization of state space exploration versus greedy search. A lower choice $p$ defers to the standard RRT with $p=0$ being exactly the original RRT. A high value of $p$ will try to stretch the current tree towards the goal and guide the expansion since the desired end result is just some path rather than an understanding of the reachability of the entire space.
 
 \subsubsection{Bidirectional RRT} \label{planning:birrt}
-The bidirectional RRT method was proposed by  Kuffner and Lavalle in 2005 as a means to speed up the RRT algorithm \url{http://planning.cs.uiuc.edu/node858.html#KufLav05}. It is based on a similar principle as the goal biased RRT in that we can guide the direction of the growth of the RRT. However, instead of growing a single tree, we can instantiate two RRTs and help them grow towards each other. Doing so can help the planner find solutions more quickly, as in the case when there are bug traps in the configuration space \url{http://planning.cs.uiuc.edu/node219.html#sec:genframe} \todo{cite}. To encourage the rapidly exploring nature of the RRT, the bi-RRT simply maintains that the difference between tree sizes never gets too large. The algorithm pseudocode is shown below.
+The bidirectional RRT method was proposed by  Kuffner and Lavalle in 2005 as a means to speed up the RRT algorithm \cite{lavalle:birrt}. It is based on a similar principle as the goal biased RRT in that we can guide the direction of the growth of the RRT. However, instead of growing a single tree, we can instantiate two RRTs and help them grow towards each other. Doing so can help the planner find solutions more quickly, as in the case when there are bug traps in the configuration space \cite{lavalle:planning}. To encourage the rapidly exploring nature of the RRT, the bi-RRT simply maintains that the difference between tree sizes never gets too large. The algorithm pseudocode is shown below.
 
 {\singlespacing{
 \begin{algorithm}[t]
 \caption{Bidirectional RRT}
 \begin{algorithmic}[1]
 \Function{ConstructBiRRT}{$q_s,q_g$}
-\State $T_a$.init($q_s$);
-\State $T_b$.init($q_g$);
+\State $T_a$.init($q_s$)
+\State $T_b$.init($q_g$)
 \For{k = 1 to $K$}
-    \State $q_s \gets$ \Call{Random Sample}{};
-    \State $q_{near} \gets$ \Call{Nearest}{$T_a, q_s$};
-    \State $q_n \gets$ \Call{Stopping Configuration}{$q_{near}, q_s$};
+    \State $q_s \gets$ \Call{Random Sample}{}
+    \State $q_{near} \gets$ \Call{Nearest}{$T_a, q_s$}
+    \State $q_n \gets$ \Call{Stopping Configuration}{$q_{near}, q_s$}
     \If{$q_{near} \ne q_n$}
-        \State $T_a$.add\_vertex($q_n$);
-        \State $T_a$.add\_edge($q_{near}, q_n$);
-        \State $q_{near}' \gets$ \Call{Nearest}{$T_b, q_n$};
-        \State $q_n' \gets$ \Call{Stopping Configuration}{$q_{near}', q_n$};
+        \State $T_a$.add\_vertex($q_n$)
+        \State $T_a$.add\_edge($q_{near}, q_n$)
+        \State $q_{near}' \gets$ \Call{Nearest}{$T_b, q_n$}
+        \State $q_n' \gets$ \Call{Stopping Configuration}{$q_{near}', q_n$}
         \If{$q_{near}' \ne q_n'$}
-            \State $T_b$.add\_vertex($q_n'$);
-            \State $T_b$.add\_edge($q_{near}', q_n'$);
+            \State $T_b$.add\_vertex($q_n'$)
+            \State $T_b$.add\_edge($q_{near}', q_n'$)
         \EndIf
         \If{$q_n = q_n'$}
-            \State Return SOLUTION;
+            \State Return SOLUTION
         \EndIf
     \EndIf
     \If{$|T_a| > |T_b|$}
-        \State SWAP($T_a, T_b$);
+        \State SWAP($T_a, T_b$)
     \EndIf
 \EndFor
-\State Return FAILURE;
+\State Return FAILURE
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 }}
 
 \section{The MCR Algorithm}
-In this section we will describe the Minimum Constraint Removal (MCR) algorithm as formulated by Hauser (for the formal problem statement see \ref{intro:statement}. The discussion that follows draws heavily from Hauser's description \todo{Cite Hauser}. MCR is the first algorithm we discuss that handles tolerating collisions while searching for paths. We go into a more extensive description and analysis of MCR as we are interested in what shortcomings this algorithm has such that it cannot meet our requirements.
+In this section we will describe the Minimum Constraint Removal (MCR) algorithm as formulated by Hauser (for the formal problem statement see \ref{intro:statement}. The discussion that follows draws heavily from Hauser's description \cite{hauser:mcr}. MCR is the first algorithm we discuss that handles tolerating collisions while searching for paths. We go into a more extensive description and analysis of MCR as we are interested in what shortcomings this algorithm has such that it cannot meet our requirements.
 
 \subsection{Methods of Solving the MCR Problem}
 Hauser proposed two types of solutions employing classic search techniques: an exact search method (best first search) and a close approximation that should generally run faster (greedy search).
@@ -114,7 +114,6 @@ The weighted MCR problem can be trivially extended from the original formulation
 \subsubsection{Implementation Specifics}
 Below we include Hauser's pseudocode outlining the general MCR procedure and the Expand-Roadmap procedure. The other procedures are specific to our implementation of this planner. Following is a discussion of some interesting points.
 
-\todo{Figure out semicolons...?}
 %\begin{figure}[H]
 {\singlespacing{
 \begin{algorithm}[t]
