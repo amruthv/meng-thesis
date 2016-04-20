@@ -1,27 +1,28 @@
 \chapter{Collision Supported Path Planning}
-In this chapter, we will look at a number of algorithms we propose for finding paths that are tolerant of collisions. These approaches will favor different strategies for finding these paths such as finding optimal paths versus computation time (or a combination of these). The discussion on algorithm performance will be addressed in the following chapter.
+In this chapter, we will look at a number of algorithms we propose for finding paths that are tolerant of collisions. These approaches represent different tradeoffs between path optimality and computational speed. The discussion on algorithm performance will be addressed in the following chapter.
 
-Note that all of the RRT variants are actually bi-RRT variants but for conciseness we will just refer to them as RRT variants. These variants also use goal bias sampling to encourage growth between the two trees. Additionally, in practice because RRTs are at risk for getting stuck in an area, in practice these algorithms are implemented using a number of instance attempts with a limit on the number of search iterations per instance. \todo{cite why this is necessary}
+Note that all of the RRT variants are actually bi-RRT variants but for conciseness we will just refer to them as RRT variants. These variants also use goal bias sampling to encourage growth between the two trees. Additionally, because RRTs are at risk for getting stuck in an area, these algorithms are implemented using a number of instance attempts with a limit on the number of search iterations per instance. \todo{cite why this is necessary}
 
 \section{Obstacle Ignorant RRTs}
-In this section we will describe a simple alternative to the traditional RRT that enables it to find paths that tolerate collisions. In particular this algorithm favors finding some path very quickly and does not prioritize minimizing the total path cover. We will shorthand this planner as OIRRT (obstacle ignorant RRT).
+\todo{This needs work. Why find a path instead of direct path...}
+In this section we will describe an alternative to the traditional RRT that enables it to find paths that tolerate collisions. In particular this algorithm favors finding some path very quickly and does not prioritize minimizing the total path cover. We will shorthand this planner as OIRRT (obstacle ignorant RRT).
 
-The OIRRT is in essence a simpler version of the bidirectional RRT. In fact, the implementation is nearly identical. Consult the description of the RRT available \todo{add ref}. We maintain two trees as Lavalle proposed while adding goal biasing for both trees. The only difference occurs in the tree growing phase where we will add the sampled node to its respective tree regardless of any collisions. The OIRRT is thus ignorant of any obstacles in the world until the two trees meet at which point the cover of the trajectory can be returned to the higher level planner. OIRRTs can be thought of as upfront constraint removal -- that is anytime a constraint would be violated, we simply remove them as we did in the MCR algorithm. 
+The OIRRT is in essence a simpler version of the bidirectional RRT described in section \ref{planning:birrt}. We maintain two trees as Lavalle proposed while adding goal biasing for both trees. The only difference occurs in the tree growing phase where we will add the sampled node to its respective tree regardless of any collisions. The OIRRT is thus ignorant of any obstacles in the world until the two trees meet at which point the cover of the trajectory can be returned to the higher level planner. OIRRTs can be thought of as upfront constraint removal -- that is, anytime a constraint would be violated, we simply remove them as we did in the MCR algorithm. 
 
 A clear deficiency of the OIRRT is that it likely will not find a minimum cover path. In fact it likely will return a path that is not "close" to the optimal cover path either, as it merely explores the space randomly and returns the first full path it finds.
 
 This algorithm has some interesting properties, however. If we were interested in a path from the start to the goal, we could simple interpolate the straight path from the $s \rightarrow g$. However by introducing the randomness from sampling we enable the potential to explore space between these configurations potentially circumventing obstacles in the direct trajectory; while the OIRRT does not attempt to determine problematic obstacles, it still demonstrates a potential to find some good paths.
 
 \section{Iterative Obstacle Removing RRTs}
-This section explores the concept of iterative constraint removal via RRTs (IOR-RRT). The previous section on OIRRTs were immediate on constraint removal. As a result these constraint removals were largely uninformed -- specifically they were informed from a single data point (a collision with this constraint in tree growth). We propose two variants of iterative constraint removal that accumulate information of the state of the world and then proceed to perform constraint removal.
+This section explores the concept of iterative constraint removal via RRTs (IOR-RRT). The previous section on OIRRTs were immediate on constraint removal; as soon as a collision was found, the corresponding obstacle was immediately removed. As a result many of these constraint removals were overaggressive and unecessary. They were motivated by little information that these obstacles were good candidates for removal. We propose two variants of iterative constraint removal that instead accumulate information about the state of the world and then proceed to perform constraint removal one-by-one.
 
 \subsection{Details}
-This family of algorithms proceeds similarly to the bidirectional RRT algorithm. The general algorithm is outlined below.
-\todo{Figure out if want text named variables italicizesd}
+This family of algorithms proceeds similarly to the bidirectional RRT algorithm. The general algorithm is outlined in Algorithm \ref{alg:iorrt}.
+
 {\singlespacing{
-\begin{algorithm}[h!]
+\begin{algorithm}
 \caption{Iterative Obstacle Removing RRT}
-\label{IORRT}
+\label{alg:iorrt}
 \begin{algorithmic}[1]
 \Function{IterativeRemoval}{$q_s,q_g$}
     \State $counts \gets$ \{\}
@@ -56,7 +57,7 @@ This family of algorithms proceeds similarly to the bidirectional RRT algorithm.
 \EndFunction
 
 \Function{Attempt Extend}{$q_1, q_2,counts,permitted$}
-    \For{$q \in$ \Call{Interpolate}{$q_1, q_2$}
+    \For{$q \in$ \Call{Interpolate}{$q_1, q_2$}}
         \State $viols \gets$ \Call{Collisions}{$q$}
         \If{$viols \not\subseteq permitted$}
             \For{$viol \in viols$}
@@ -79,11 +80,11 @@ This family of algorithms proceeds similarly to the bidirectional RRT algorithm.
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
-}}}
+}}
 
-The algorithm attempts to grow a bidirectional RRT as the original algorithm does. A significant difference is upon colliding with an obstacle on interpolation between two configurations, the algorithm stores memory of this collision. Once a collision is found and its presence marked, the extend immediately fails and we return to the growth loop of the RRT. 
+The algorithm attempts to grow a bidirectional RRT as the original algorithm does. A significant difference is upon colliding with an obstacle on interpolation between two configurations, the algorithm keeps track of this collision. Once a collision is found and its presence marked, the extend immediately fails and we return to the growth loop of the RRT. 
 
-This type of constraint removal introduces a new parameter $f$ that governs how often we will choose a constraint to ignore. In turn this affects the number of constraint violations that can be recorded before selecting an obstacle to ignore. If the number of iterations that the iterative obstacle removal RRT is bounded by $K$, then at most $c=\frac{K}{f}$ obstacles will be removed. If our motion planning problem is unsolvable with ignoring $c$ constraints, then this algorithm can never find a solution. Thus fragility can be a problem in worlds where setting an upper bound on the number of obstacles that need to be removed can be determined.
+This type of constraint removal introduces a new parameter $f$ that governs how often we will choose a constraint to ignore. In turn this affects the number of constraint violations that can be recorded before selecting an obstacle to ignore. If the number of iterations that the iterative obstacle removal RRT is bounded by $K$, then at most $c=\frac{K}{f}$ obstacles will be removed. If our motion planning problem is unsolvable while ignoring $c$ constraints, then this algorithm can never find a solution. Thus fragility can be a problem in worlds where setting an upper bound on the number of obstacles that need to be removed is difficult.
 
 \subsection{Collision History as an Indicator to Removal Importance}
 The family of iterative obstacle removal RRTs are designed around finding a path quickly while attempting to mitigate the number of obstacles that must be removed to find such a path. Because we are interested in avoiding excessive obstacle removal, we need a signal on the importance of an obstacle in this goal. Using the collision history in practice works as this good signal. Intuitively, the more frequently an obstacle is run into, the more likely a path will be found by removing this obstacle.
