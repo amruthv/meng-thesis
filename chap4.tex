@@ -107,41 +107,6 @@ Naturally because the RRT and Bidirectional RRT search strategies only work in f
 
 The RRT variant algorithms we propose perform similarly aside from the obstacle ignorant RRT which naturally will find a path that collides with the top and bottom blocks. The general trend is search informed search outperforms any of the individual IOR-RRT options but is outperformed by the repeated IOR-RRT. Additionally there is minimal impact on path lengths from any of these algorithms.
 
-
-
-
-% \subsection{Almost Feasible Path World (MCR shines)}
-% \todo{THIS IS GOING TO CHANGE}
-
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=0.5\textwidth]{many_obstacles_unfeasible_world}
-%     \caption{Nearly Feasible World}
-%     \label{fig:many_obstacles_unfeasible_world}
-% \end{figure}
-
-% \begin{table}
-% \begin{tabular}{@{}llllll@{}}
-% \toprule
-% Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
-% \midrule
-% MCR & 100 & 0.00 & 51.05 & 9083.23 & 3.44 \\
-% RRT & 0 & 2.92 & 0.00 & 0.00 & 0.00 \\
-% Bidirectional RRT & 0 & 3.48 & 0.00 & 0.00 & 0.00 \\
-% Greedy IOR-RRT & 100 & 0.00 & 1.97 & 7175.5 & 19.75 \\
-% Probabilistic IOR-RRT & 100 & 0.00 & 2.40 & 7454.49 & 20.33 \\
-% OIRRT & 100 & 0.00 & 1.05 & 6614.65 & 26.52 \\
-% Repeated IOR-RRT & 100 & 0.00 & 22.99 & 8620.46 & 8.45 \\
-% Single Search IOR-RRT & 100 & 0.00 & 2.57 & 7354.78 & 20.09 \\
-% Repeated Search IOR-RRT & 100 & 0.00 & 5.63 & 7346.93 & 18.98 \\
-% \bottomrule
-% \end{tabular}
-% \caption{Algorithm Performance on Many Obstacles Unfeasible World}
-% \label{tab:many_obstacles_unfeasible_world}
-% \end{table}
-
-
-
 \subsection{Cluttered World with Greedy Minimum Cover Path} \label{res:cluttered_world}
 Here we will examine the performance of the algorithms on worlds where the best cover paths exist through the direct path from the start to the goal. We would like to understand how the performance of our algorithms changes with the not only the number of obstacles but the location of the best paths.
 
