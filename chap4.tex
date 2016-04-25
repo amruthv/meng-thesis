@@ -105,7 +105,7 @@ Search Informed IOR-RRT & 100 & 0.00 & 18.60 & 5538.52 & 1.45 \\
 \label{tab:two_soda_world}
 \end{table}
 
-Because the RRT and Bidirectional RRT search strategies only work in feasible worlds, it is natural that these two algorithms fail in this world. For the other worlds that are unfeasible, we will omit their performance since they necessarily fail. The optimal path cover in this example is a cover of weight one.  We note that in this unfeasible world with only two obstacles, the MCR algorithm takes around 13 seconds before returning a path with a good cover. This has to do with the fundamental MCR algorithm issue of not knowing when to return the found path (since it looks for iteratively better paths than a single, first path). 
+Because the RRT and Bidirectional RRT search strategies only work in feasible worlds, it is natural that these two algorithms fail in this world. For the other worlds that are unfeasible, we will omit their performance since they necessarily fail. The optimal path cover in this example is a cover of weight one. We note that in this unfeasible world with only two obstacles, the MCR algorithm takes around 13 seconds before returning a path with a good cover. This has to do with the fundamental MCR algorithm issue of not knowing when to return the found path (since it looks for iteratively better paths than a single, first path). 
 
 The RRT variant algorithms we propose perform similarly. The directo trajectory, however, finds a path that collides with the top and bottom blocks (can be seen visually as well). Search informed IOR-RRTs outperform any of the basic IOR-RRT options but is outperformed by the repeated IOR-RRT. Additionally there is minimal impact on path lengths from any of the search-based algorithms.
 
