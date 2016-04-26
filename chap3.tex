@@ -1,7 +1,7 @@
 \chapter{Collision Supported Path Planning} \label{chap:algos}
 In this chapter, we discuss algorithms for finding paths that are tolerant of collisions. These approaches represent different tradeoffs between path optimality and computational speed. The discussion on algorithm performance will be addressed in the following chapter.
 
-Note that all of the RRT variants are actually bi-RRT variants but for conciseness we will just refer to them as RRT variants. These variants also use goal bias sampling to encourage growth between the two trees. Additionally, because RRTs are at risk for getting stuck in an area, these algorithms are implemented using a number of instance attempts with a limit on the number of search iterations per instance. \todo{cite why this is necessary}
+Note that all of the RRT variants are actually bi-RRT variants but for conciseness we will just refer to them as RRT variants. These variants also use goal bias sampling to encourage growth between the two trees.
 
 \section{Obstacle Ignorant Direct Trajectories}
 This technique is the most basic collision tolerant motion planning strategy. We do not even search the configuration space. Consider a motion planning problem specified by a start configuration $s$, a goal configuration $g$, and a set of obstacles $O$. The motion plan that this simple algorithm returns is simply the interpolated direct path \textproc{Interpolate}($s, g$). This algorithm is deterministic unlike the other algorithms in this chapter. 

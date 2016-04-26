@@ -1,5 +1,5 @@
 \chapter{Experimental Results}
-In this chapter we review the performance of the algorithms from Chapter \ref{chap:algos} on different worlds. These worlds showcase various scenarios that a motion planner may face. The results for the IOR-RRT variants' we show for the first two sections use a memory factor of 0. Both the repeated IOR-RRT and search informed IOR-RRT use the greedy removal strategy. 
+In this chapter we review the performance of the algorithms from Chapter \ref{chap:algos} on different worlds. These worlds showcase various scenarios that a motion planner may face. The results for the IOR-RRT variants' we show for the first two sections use a memory factor of 0. Both the repeated IOR-RRT and search informed IOR-RRT use the greedy removal strategy. Additionally, because RRTs are at risk for getting stuck in an area, all the RRT variants discussed are implemented using a number of instance attempts with a limit on the number of search iterations per instance \cite{wedge:heavytail}.
 
 \section{Worlds with Feasible Paths}\label{results:feasible}
 The following section is dedicated to worlds that are most common. These are worlds for which there exists a path from a start configuration to a goal configuration without any collisions. We will look at two such examples: one that is mostly free space, and one that has many obstacles.
