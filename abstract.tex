@@ -12,4 +12,4 @@
 %% file should be \input (not \include 'd) from cover.tex.
 
 % no more than 150 words
-\emph{TODO}
+We present algorithms for motion planning that can tolerate collisions. Because finding a path of minimum cover is prohibitively expensive, we investigate algorithms that work well in practice and find solutions close to the true minimum cover solution. We introduce the notion of removal importance for obstacles and the family of iterative obstacle removing RRTs (IOR-RRTs). This family of algorithms operate similarly to the RRT but iteratively tolerate more collisions in trying to identify a path. One member of the family that performs well is the search informed IOR-RRT. This search technique first performs bidirectional collision-free search to find a clear path if possible. In failure, it iteratively selects an obstacle for removal using its removal importance. We measure the performance of our algorithms on a multi-link robot operating in both environments with feasible paths and those where collisions must be allowed. 
