@@ -1,0 +1,111 @@
+\chapter{Tables}
+
+In the following tables, $T_f$ denotes the failure time and $T_s$ is its counterpart success time. We let $L$ refer to the length of a path. As before $|S|$ refers to the size of a cover. 
+
+\begin{table}[h!]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lllllllll@{}}
+\toprule
+Algorithm & Success(\%) & $T_f$ (s) & $T_s$ (s) & $L$ & $|S|$ & $\sigma_{T_f}$ & $\sigma_{T_s}$ & $\sigma_{|S|}$ \\
+\midrule
+MCR & 100.0 & 0.00 & 26.98 & 5491.39 & 2.62 & --- & 17.72 & 3.90 \\
+RRT & 19.6 & 2.90 & 1.74 & 5485.26 & 0.00 & 0.21 & 0.73 & 0.00 \\
+Bidirectional RRT & 100.0 & 0.00 & 0.79 & 5495.62 & 0.00 & --- & 0.68 & 0.00 \\
+Greedy IOR-RRT & 100.0 & --- & 0.67 & 5034.17 & 1.97 & --- & 0.22 & 3.47 \\
+Probabilistic IOR-RRT & 100.0 & --- & 0.66 & 4970.09 & 2.30 & --- & 0.20 & 3.78 \\
+Direct Trajectory & 100.0 & --- & 0.03 & 3044.89 & 10.00 & --- & 0.00 & 0.00 \\
+Repeated IOR-RRT & 100.0 & --- & 6.67 & 4787.62 & 0.01 & --- & 0.74 & 0.08 \\
+Search Informed IOR-RRT & 100.0 & --- & 1.13 & 5545.40 & 0.00 & --- & 0.90 & 0.00 \\
+\bottomrule
+\end{tabular}
+}
+\caption{Algorithm Performance on Minimal Obstacle World}
+\label{tab:feasible_world}
+\end{table}
+
+
+\begin{table}[h!]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tabular}{@{}lllllllll@{}}
+\toprule
+Algorithm & Success(\%) & $T_f$ (s) & $T_s$ (s) & $L$ & $|S|$ & $\sigma_{T_f}$ & $\sigma_{T_s}$ & $\sigma_{|S|}$ \\
+\midrule
+MCR & 100.0 & --- & 20.79 & 8187.41 & 2.16 & --- & 7.49 & 0.93 \\
+RRT & 1.4 & 2.45 & 2.22 & 7764.50 & 0.00 & 0.35 & 0.70 & 0.00 \\
+Bidirectional RRT & 60.6 & 8.35 & 4.07 & 8788.88 & 0.00 & 0.86 & 2.36 & 0.00 \\
+Greedy IOR-RRT & 100.0 & --- & 3.05 & 8832.71 & 5.77 & --- & 0.82 & 7.02 \\
+Probabilistic IOR-RRT & 100.0 & --- & 2.51 & 8676.55 & 10.87 & --- & 0.79 & 8.81 \\
+Direct Trajectory & 100.0 & --- & 0.05 & 5154.62 & 21.00 & --- & 0.01 & 0.00 \\
+Repeated IOR-RRT & 100.0 & --- & 22.82 & 8556.84 & 1.29 & --- & 2.94 & 0.90 \\
+Search Informed IOR-RRT & 100.0 & --- & 9.14 & 9028.56 & 1.70 & --- & 4.63 & 3.64 \\
+\bottomrule
+\end{tabular}
+}
+\caption{Algorithm Performance on Many Obstacles Feasible World}
+\label{tab:many_obstacles_feasible_world}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}lllllllll@{}}
+\toprule
+Algorithm & Success(\%) & $T_f$ (s) & $T_s$ (s) & $L$ & $|S|$ & $\sigma_{T_f}$ & $\sigma_{T_s}$ & $\sigma_{|S|}$ \\
+\midrule
+MCR & 100.0 & 0.00 & 10.82 & 6190.77 & 1.06 & --- & 7.60 & 0.77 \\
+RRT & 0.0 & 0.74 & --- & --- & --- & 0.09 & --- & --- \\
+Bidirectional RRT & 0.0 & 3.82 & --- & --- & --- & 0.44 & --- & --- \\
+Greedy IOR-RRT & 100.0 & --- & 1.46 & 5168.13 & 1.96 & --- & 0.30 & 2.94 \\
+Probabilistic IOR-RRT & 100.0 & --- & 1.44 & 5165.11 & 2.54 & --- & 0.31 & 3.48 \\
+Direct Trajectory & 100.0 & --- & 0.04 & 3044.89 & 11.00 & --- & 0.00 & 0.00 \\
+Repeated IOR-RRT & 100.0 & --- & 12.57 & 5120.58 & 1.00 & --- & 1.35 & 0.00 \\
+Search Informed IOR-RRT & 100.0 & --- & 15.91 & 5403.04 & 1.60 & --- & 1.35 & 2.37 \\
+\bottomrule
+\end{tabular}
+\caption{Algorithm Performance on Two Block Unfeasible World}
+\label{tab:two_soda_world}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}lllllllll@{}}
+\toprule
+Algorithm & Success(\%) & $T_f$ (s) & $T_s$ (s) & $L$ & $|S|$ & $\sigma_{T_f}$ & $\sigma_{T_s}$ & $\sigma_{|S|}$ \\
+\midrule
+MCR & 100.0 & 0.00 & 116.29 & 4753.26 & 19.85 & --- & 71.50 & 7.64 \\
+RRT & 0.0 & 0.74 & --- & --- & --- & 0.02 & --- & --- \\
+Bidirectional RRT & 0.0 & 3.70 & --- & --- & --- & 0.05 & --- & --- \\
+Greedy IOR-RRT & 100.0 & --- & 3.38 & 4605.07 & 16.14 & --- & 0.92 & 1.18 \\
+Probabilistic IOR-RRT & 100.0 & --- & 4.59 & 4884.78 & 19.88 & --- & 2.21 & 5.64 \\
+Direct Trajectory & 100.0 & --- & 0.08 & 3597.09 & 36.00 & --- & 0.00 & 0.00 \\
+Repeated IOR-RRT & 100.0 & --- & 44.46 & 4605.78 & 15.98 & --- & 6.85 & 0.13 \\
+Search Informed IOR-RRT & 100.0 & --- & 24.30 & 4688.62 & 16.61 & --- & 0.75 & 3.11 \\
+\bottomrule
+\end{tabular}
+\caption{Algorithm Performance on Cluttered World (With Greedy MCR Path)}
+\label{tab:cluttered_world}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}lllllllll@{}}
+\toprule
+Algorithm & Success(\%) & $T_f$ (s) & $T_s$ (s) & $L$ & $|S|$ & $\sigma_{T_f}$ & $\sigma_{T_s}$ & $\sigma_{|S|}$ \\
+\midrule
+MCR & 100.0 & 0.00 & 153.48 & 6838.41 & 23.05 & --- & 56.93 & 6.76\\
+RRT & 0.0 & 0.76 & --- & --- & --- & 0.03 & --- & --- \\
+Bidirectional RRT & 0.0 & 3.79 & --- & --- & --- & 0.08 & --- & --- \\
+Greedy IOR-RRT & 100.0 & --- & 3.59 & 5352.60 & 24.99 & --- & 1.18 & 4.82 \\
+Probabilistic IOR-RRT & 100.0 & --- & 4.69 & 5428.90 & 23.71 & --- & 2.32 & 6.44 \\
+Direct Trajectory & 100.0 & --- & 0.08 & 3597.09 & 39.00 & --- & 0.00 & 0.00 \\
+Repeated IOR-RRT & 100.0 & --- & 45.84 & 5865.23 & 14.62 & --- & 6.68 & 1.77 \\
+Search Informed IOR-RRT & 100.0 & --- & 24.94 & 5359.50 & 26.50 & --- & 0.81 & 6.00 \\
+\bottomrule
+\end{tabular}
+\caption{Algorithm Performance on Cluttered World (With Non-Greedy MCR Path)}
+\label{tab:top_light_cluttered_world}
+\end{table}
+
+\clearpage
+\newpage
