@@ -1,6 +1,8 @@
 \chapter{Experimental Results}
 In this chapter we review the performance of the algorithms from Chapter \ref{chap:algos} on different worlds. These worlds showcase various scenarios that a motion planner may face. The results for the IOR-RRT variants' we show for the first two sections use a memory factor of 0. Both the repeated IOR-RRT and search informed IOR-RRT use the greedy removal strategy. Additionally, because RRTs are at risk for getting stuck in an area, all the RRT variants discussed are implemented using a number of instance attempts with a limit on the number of search iterations per instance \cite{wedge:heavytail}.
 
+The results shown in this chapter are averages over 500 trials.
+
 \section{Worlds with Feasible Paths}\label{results:feasible}
 The following section is dedicated to worlds that are most common. These are worlds for which there exists a path from a start configuration to a goal configuration without any collisions. We will look at two such examples: one that is mostly free space, and one that has many obstacles.
 
@@ -18,16 +20,16 @@ The first world of this type can be seen in Figure \ref{fig:feasible_world} and 
 \centering
 \begin{tabular}{@{}llllll@{}}
 \toprule
-Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
 \midrule
-MCR & 100 & 0.00 & 34.287 & 5460.661 & 2.38 \\
-RRT & 19 & 3.95 & 2.48 & 5561.92 & 0.0 \\ 
-Bidirectional RRT & 100 & 0.00 & 0.96 & 5432.94 & 0.0 \\
-Greedy IOR-RRT & 100 & 0.00 & 0.79 & 5116.33 & 1.4 \\
-Probabilistic IOR-RRT & 100 & 0.00 & 0.83 & 5099.30 & 2.8 \\
-Direct Trajectory & 100 & 0.00 & 0.04 & 3044.89 & 10 \\
-Repeated IOR-RRT & 100 & 0.00 & 7.77 & 4653.65 & 0.0 \\
-Search Informed IOR-RRT & 100 & 0.00 & 1.32 & 5400.34 & 0.0 \\
+MCR & 100.0 & 0.00 & 26.98 & 5491.39 & 2.62 \\
+RRT & 19.6 & 2.90 & 1.74 & 5485.26 & 0.00 \\
+Bidirectional RRT & 100.0 & 0.00 & 0.79 & 5495.62 & 0.00 \\
+Greedy IOR-RRT & 100.0 & 0.00 & 0.67 & 5034.17 & 1.97 \\
+Probabilistic IOR-RRT & 100.0 & 0.00 & 0.66 & 4970.09 & 2.30 \\
+Direct Trajectory & 100.0 & 0.00 & 0.03 & 3044.89 & 10.00 \\
+Repeated IOR-RRT & 100.0 & 0.00 & 6.67 & 4787.62 & 0.01 \\
+Search Informed IOR-RRT & 100.0 & 0.00 & 1.13 & 5545.40 & 0.00 \\
 \bottomrule
 \end{tabular}
 \caption{Algorithm Performance on Minimal Obstacle World}
@@ -51,16 +53,16 @@ In Figure \ref{fig:many_obstacles_feasible_world} we see a possible situation wh
 \centering
 \begin{tabular}{@{}llllll@{}}
 \toprule
-Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
 \midrule
-MCR & 100 & 0.00 & 22.55 & 8161.90 & 2.34 \\
-RRT & 3 & 2.76 & 2.28 & 7795.35 & 0 \\
-Bidirectional RRT & 52 & 9.75 & 4.75 & 8676.26 & 0.00 \\
-Greedy IOR-RRT & 100 & 0.00 & 2.94 & 9048.46 & 6.34 \\
-Probabilistic IOR-RRT & 100 & 0.00 & 2.53 & 8693.80 & 11.54 \\
-Direct Trajectory & 100 & 0.00 & 0.05 & 5154.62 & 21 \\
-Repeated IOR-RRT & 100 & 0.00 & 25.11 & 8653.24 & 1.28 \\
-Search Informed IOR-RRT & 100 & 0.00 & 9.79 & 9100.72 & 1.24 \\
+MCR & 100.0 & 0.00 & 20.79 & 8187.41 & 2.16 \\
+RRT & 1.4 & 2.45 & 2.22 & 7764.50 & 0.00 \\
+Bidirectional RRT & 60.6 & 8.35 & 4.07 & 8788.88 & 0.00 \\
+Greedy IOR-RRT & 100.0 & 0.00 & 3.05 & 8832.71 & 5.77 \\
+Probabilistic IOR-RRT & 100.0 & 0.00 & 2.51 & 8676.55 & 10.87 \\
+Direct Trajectory & 100.0 & 0.00 & 0.05 & 5154.62 & 21.00 \\
+Repeated IOR-RRT & 100.0 & 0.00 & 22.82 & 8556.84 & 1.29 \\
+Search Informed IOR-RRT & 100.0 & 0.00 & 9.14 & 9028.56 & 1.70 \\
 \bottomrule
 \end{tabular}
 \caption{Algorithm Performance on Many Obstacles Feasible World}
@@ -89,16 +91,16 @@ We start our analysis on unfeasible worlds with a simple analog to the minimal o
 \centering
 \begin{tabular}{@{}llllll@{}}
 \toprule
-Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
 \midrule
-MCR & 100 & 0.00 & 12.58 & 6060.29 & 1.10 \\
-RRT & 0 & 0.83 & 0.00 & 0.00 & 0.00 \\
-Bidirectional RRT & 0 & 4.31 & 0.00 & 0.00 & 0.00 \\
-Greedy IOR-RRT & 100 & 0.00 & 1.40 & 5151.30 & 2.00 \\
-Probabilistic IOR-RRT & 100 & 0.00 & 1.36 & 5076.79 & 2.57 \\
-Direct Trajectory & 100 & 0.00 & 0.04 & 3044.89 & 11.00 \\
-Repeated IOR-RRT & 100 & 0.00 & 14.06 & 5221.01 & 1.00 \\
-Search Informed IOR-RRT & 100 & 0.00 & 18.60 & 5538.52 & 1.45 \\
+MCR & 100.0 & 0.00 & 10.82 & 6190.77 & 1.06 \\
+RRT & 0.0 & 0.74 & 0.00 & 0.00 & 0.00 \\
+Bidirectional RRT & 0.0 & 3.82 & 0.00 & 0.00 & 0.00 \\
+Greedy IOR-RRT & 100.0 & 0.00 & 1.46 & 5168.13 & 1.96 \\
+Probabilistic IOR-RRT & 100.0 & 0.00 & 1.44 & 5165.11 & 2.54 \\
+Direct Trajectory & 100.0 & 0.00 & 0.04 & 3044.89 & 11.00 \\
+Repeated IOR-RRT & 100.0 & 0.00 & 12.57 & 5120.58 & 1.00 \\
+Search Informed IOR-RRT & 100.0 & 0.00 & 15.91 & 5403.04 & 1.60 \\
 \bottomrule
 \end{tabular}
 \caption{Algorithm Performance on Two Block Unfeasible World}
@@ -123,14 +125,14 @@ Here we examine the performance of the algorithms on worlds where the best cover
 \centering
 \begin{tabular}{@{}llllll@{}}
 \toprule
-Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
 \midrule
-MCR & 100 & 0.00 & 118.69 & 4891.49 & 19.04 \\
-Greedy IOR-RRT & 100 & 0.00 & 4.11 & 4656.24 & 16.30 \\
-Probabilistic IOR-RRT & 100 & 0.00 & 5.36 & 4927.45 & 20.09 \\
-Direct Trajectory & 100 & 0.00 & 0.09 & 3597.09 & 36.00 \\
-Repeated IOR-RRT & 100 & 0.00 & 52.81 & 4617.88 & 15.96 \\
-Search Informed IOR-RRT & 100 & 0.00 & 29.50 & 4576.64 & 16.80 \\
+MCR & 100.0 & 0.00 & 116.29 & 4753.26 & 19.85 \\
+Greedy IOR-RRT & 100.0 & 0.00 & 3.38 & 4605.07 & 16.14 \\
+Probabilistic IOR-RRT & 100.0 & 0.00 & 4.59 & 4884.78 & 19.88 \\
+Direct Trajectory & 100.0 & 0.00 & 0.08 & 3597.09 & 36.00 \\
+Repeated IOR-RRT & 100.0 & 0.00 & 44.46 & 4605.78 & 15.98 \\
+Search Informed IOR-RRT & 100.0 & 0.00 & 24.30 & 4688.62 & 16.61 \\
 \bottomrule
 \end{tabular}
 \caption{Algorithm Performance on Cluttered World (With Greedy MCR Path)}
@@ -156,16 +158,14 @@ In this last test we use a world that has the same layout as the previous world 
 \centering
 \begin{tabular}{@{}llllll@{}}
 \toprule
-Algorithm & Success(\%)  & Failure Time  & Success Time  & Path Length & Cover\\ 
+Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
 \midrule
-MCR & 100 & 0.00 & 163.32 & 6789.82 & 22.43 \\
-RRT & 0 & 0.93 & 0.00 & 0.00 & 0.00 \\
-Bidirectional RRT & 0 & 4.58 & 0.00 & 0.00 & 0.00 \\
-Greedy IOR-RRT & 100 & 0.00 & 4.10 & 5189.46 & 25.15 \\
-Probabilistic IOR-RRT & 100 & 0.00 & 5.45 & 5412.72 & 24.28 \\
-Direct Trajectory & 100 & 0.00 & 0.09 & 3597.09 & 39.00 \\
-Repeated IOR-RRT & 100 & 0.00 & 50.29 & 5860.71 & 14.75 \\
-Search Informed IOR-RRT & 100 & 0.00 & 29.78 & 5386.64 & 27.00 \\
+MCR & 100.0 & 0.00 & 153.48 & 6838.41 & 23.05 \\
+Greedy IOR-RRT & 100.0 & 0.00 & 3.59 & 5352.60 & 24.99 \\
+Probabilistic IOR-RRT & 100.0 & 0.00 & 4.69 & 5428.90 & 23.71 \\
+Direct Trajectory & 100.0 & 0.00 & 0.08 & 3597.09 & 39.00 \\
+Repeated IOR-RRT & 100.0 & 0.00 & 45.84 & 5865.23 & 14.62 \\
+Search Informed IOR-RRT & 100.0 & 0.00 & 24.94 & 5359.50 & 26.50 \\
 \bottomrule
 \end{tabular}
 \caption{Algorithm Performance on Cluttered World (With Non-Greedy MCR Path)}
@@ -174,7 +174,7 @@ Search Informed IOR-RRT & 100 & 0.00 & 29.78 & 5386.64 & 27.00 \\
 
 We see that the greedy removal IOR-RRT is slightly outperformed by the probabilistic removal IOR-RRT. Since the ideal path is no longer along the greedy path from start to goal, the probabilistic removal strategy can succeed at opening up the middle space that the greedy removal strategy will not. Additionally, for the reasons mentioned in \ref{res:cluttered_world}, the first phase of the search informed IOR-RRT does not yield any benefit. The repeated IOR-RRT excels in this world due to the repeated chance to find good paths by opening the right space. Similar to the last world, MCR takes significantly longer than the other algorithms with the repeated IOR-RRT next. While the repeated IOR-RRT finds a cover of almost half the size as the search informed IOR-RRT, it takes 69\% longer than the search informed IOR-RRT, which itself takes notable time. 
 
-\section{Discussion on Memory Factor Impact}
+\section{Discussion on Memory Factor Impact}\label{results:memoryfactor}
 This section is dedicated to the impact of the memory factor on the IOR-RRT. Specifically we test the impact using the greedy removal IOR-RRT as the greedy removal strategy generally outperformed the probabilistic removal strategy evidenced by sections \ref{results:feasible}-\ref{results:unfeasible}. We use all memory factors in [0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0].
 
 \begin{table}[h!]
