@@ -3,176 +3,211 @@ In this chapter we review the performance of the algorithms from Chapter \ref{ch
 
 The results shown in this chapter are averages over 500 trials.
 
+Note: For a table of the numerical results for each world, including the standard deviation of our experimental results, consult the appendix (e.g. Table \ref{tab:feasible_world}). In this section we show a pictorial representation of the numerical data. Specifically, let $r$ be the success rate for an algorithm, $t_s$ be the average time for a successful search, $t_f$ be the average time to failure, and $S$ be the average cover on success. Additionally, let $S_{max}$ be the highest cover possible in a world. We plot the time $t = r * t_s + (1-r) * t_f$ against the cover $c = r * |S| + (1-r) * S_{max}$.
+
 \section{Worlds with Feasible Paths}\label{results:feasible}
-The following section is dedicated to worlds that are most common. These are worlds for which there exists a path from a start configuration to a goal configuration without any collisions. We will look at two such examples: one that is mostly free space, and one that has many obstacles.
+The following section is dedicated to worlds that are most common. These are worlds for which there exists a path from a start configuration to a goal configuration without any collisions. We will look at two such examples: one that is mostly free space and one that has many obstacles.
 
 \subsection{Simple Minimal Obstacle World}
-The first world of this type can be seen in Figure \ref{fig:feasible_world} and algorithm performance can be seen in Table \ref{tab:feasible_world}. 
+The first world of this type can be seen in Figure \ref{fig:feasible_world_layout} and the performance of the algorithm can be seen in Figure \ref{fig:feasible_world_graph}. 
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.5\textwidth]{feasible_world}
+\begin{figure}[!h]
+    \subfloat[Layout\label{fig:feasible_world_layout}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{feasible_world}
+    }
+    \hfill
+    \subfloat[Algorithm Performance\label{fig:feasible_world_graph}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{feasible_world_graph}
+    }
     \caption{Common Feasible World}
     \label{fig:feasible_world}
 \end{figure}
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{@{}llllll@{}}
-\toprule
-Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
-\midrule
-MCR & 100.0 & 0.00 & 26.98 & 5491.39 & 2.62 \\
-RRT & 19.6 & 2.90 & 1.74 & 5485.26 & 0.00 \\
-Bidirectional RRT & 100.0 & 0.00 & 0.79 & 5495.62 & 0.00 \\
-Greedy IOR-RRT & 100.0 & 0.00 & 0.67 & 5034.17 & 1.97 \\
-Probabilistic IOR-RRT & 100.0 & 0.00 & 0.66 & 4970.09 & 2.30 \\
-Direct Trajectory & 100.0 & 0.00 & 0.03 & 3044.89 & 10.00 \\
-Repeated IOR-RRT & 100.0 & 0.00 & 6.67 & 4787.62 & 0.01 \\
-Search Informed IOR-RRT & 100.0 & 0.00 & 1.13 & 5545.40 & 0.00 \\
-\bottomrule
-\end{tabular}
-\caption{Algorithm Performance on Minimal Obstacle World}
-\label{tab:feasible_world}
-\end{table}
-
-The immediate observation is that despite being largely free space, the normal RRT regularly fails to find paths. Unsurprisingly the algorithms designed to find collision free paths when they exist (bidirectional RRT, search informed IOR-RRT) do find a collision free path on this planning problem. The repeated IOR-RRT has the same performance as measured by cover size, even though it is not designed to find minimal length covers; its success is the consequence of running an IOR-RRT more times than the normal IOR-RRTs resulting in more opportunities to find a good path. As expected, the direct trajectory performs poorly in the cover measure but excels in the time measure. The MCR algorithm however fails to find the true 0 cover MCR solution but also takes the most time of any algorithm.
+The immediate observation is that despite being largely free space, the normal RRT regularly fails to find paths (evidenced by the associated high cover). Unsurprisingly the algorithms designed to find collision free paths when they exist (bidirectional RRT, search informed IOR-RRT) do find a collision free path on this planning problem. The repeated IOR-RRT has the same performance as measured by cover size, even though it is not designed to find minimal length covers; its success is the consequence of running an IOR-RRT many times resulting in more opportunities to find a good path. As expected, the direct trajectory performs poorly in the cover measure but excels in the time measure. The MCR algorithm however fails to find the true 0 cover MCR solution but also takes the most time of any algorithm.
 
 \subsection{Cluttered World With Free Path}
-In Figure \ref{fig:many_obstacles_feasible_world} we see a possible situation wherein a feasible path exists, but it is difficult to obtain. Table \ref{tab:many_obstacles_feasible_world} shows algorithm performance for this cluttered world.
+In Figure \ref{fig:many_obstacles_feasible_world} we see a possible situation wherein a feasible path exists, but it is difficult to obtain. Figure \ref{fig:many_obstacles_feasible_world_graph} shows algorithm performance for this cluttered world.
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.5\textwidth]{many_obstacles_feasible_world}
+\begin{figure}[!h]
+    \subfloat[Layout\label{fig:many_obstacles_feasible_world_layout}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{many_obstacles_feasible_world}
+    }
+    \hfill
+    \subfloat[Algorithm Performance\label{fig:many_obstacles_feasible_world_graph}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{many_obstacles_world_graph}
+    }
     \caption{Cluttered Feasible World}
     \label{fig:many_obstacles_feasible_world}
 \end{figure}
 
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.5\textwidth]{many_obstacles_feasible_world}
+%     \caption{Cluttered Feasible World}
+%     \label{fig:many_obstacles_feasible_world}
+% \end{figure}
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{@{}llllll@{}}
-\toprule
-Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
-\midrule
-MCR & 100.0 & 0.00 & 20.79 & 8187.41 & 2.16 \\
-RRT & 1.4 & 2.45 & 2.22 & 7764.50 & 0.00 \\
-Bidirectional RRT & 60.6 & 8.35 & 4.07 & 8788.88 & 0.00 \\
-Greedy IOR-RRT & 100.0 & 0.00 & 3.05 & 8832.71 & 5.77 \\
-Probabilistic IOR-RRT & 100.0 & 0.00 & 2.51 & 8676.55 & 10.87 \\
-Direct Trajectory & 100.0 & 0.00 & 0.05 & 5154.62 & 21.00 \\
-Repeated IOR-RRT & 100.0 & 0.00 & 22.82 & 8556.84 & 1.29 \\
-Search Informed IOR-RRT & 100.0 & 0.00 & 9.14 & 9028.56 & 1.70 \\
-\bottomrule
-\end{tabular}
-\caption{Algorithm Performance on Many Obstacles Feasible World}
-\label{tab:many_obstacles_feasible_world}
-\end{table}
 
-By introducing a number of narrow hallways between obstacles, the motion planning problem has been made significantly more difficult for traditional motion planning techniques. Bidirectional RRT and RRT success fell to around 50\% and 3\%, respectively. Again, despite the true MCR solution being 0, the bounded time MCR still finds a path with a cover of 2 while taking 22 seconds to solve a single instance of the problem. The two IOR-RRT implementations find paths quickly in under 3 seconds. However, the cover of these two algorithms are high relative to $S^{*} = 0$. The greedy removal strategy outperforms the probabilistic removal strategy because of the impact that the induced randomness the sampling strategy adds. Since we use collision counts as measure of the value of a removal, a sampling strategy across this distribution can result in selecting obstacles for removal that are "wrong" (not optimal leading to overall higher cover scores). The repeated probabilistic removal IOR-RRT gets close to the true MCR solution for the reason described in the previous world experiment in addition to the repeated iterations giving the algorithm the opportunity to select the "right" obstacle to remove. 
+% \begin{table}[h!]
+% \centering
+% \begin{tabular}{@{}llllll@{}}
+% \toprule
+% Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
+% \midrule
+% MCR & 100.0 & 0.00 & 20.79 & 8187.41 & 2.16 \\
+% RRT & 1.4 & 2.45 & 2.22 & 7764.50 & 0.00 \\
+% Bidirectional RRT & 60.6 & 8.35 & 4.07 & 8788.88 & 0.00 \\
+% Greedy IOR-RRT & 100.0 & 0.00 & 3.05 & 8832.71 & 5.77 \\
+% Probabilistic IOR-RRT & 100.0 & 0.00 & 2.51 & 8676.55 & 10.87 \\
+% Direct Trajectory & 100.0 & 0.00 & 0.05 & 5154.62 & 21.00 \\
+% Repeated IOR-RRT & 100.0 & 0.00 & 22.82 & 8556.84 & 1.29 \\
+% Search Informed IOR-RRT & 100.0 & 0.00 & 9.14 & 9028.56 & 1.70 \\
+% \bottomrule
+% \end{tabular}
+% \caption{Algorithm Performance on Many Obstacles Feasible World}
+% \label{tab:many_obstacles_feasible_world}
+% \end{table}
 
-The search informed IOR-RRT has some interesting behavior on this world. It succeeds in finding the lowest average cover due to its repeating the birrt search many times in its first phase. This helps it frequently find a collision-free path. Moreover, when it fails, because there does exist a collision-free path, it has been able to explore the space mitigating the number of obstacles it needs to remove to succeed unlike the normal IOR-RRTs.
+By introducing a number of narrow hallways between obstacles, the motion planning problem has been made significantly more difficult for traditional motion planning techniques. Bidirectional RRT and RRT success fell to around 61\% and 2\%, respectively. Visiually, this is demonstrated by the penalty incurred in the plotting mechanism, as they suffer from the max cover of the world driving their covers away from 0. Again, despite the true MCR solution being 0, the bounded time MCR still finds a path with a cover of 2 while taking 21 seconds to solve a single instance of the problem. The two IOR-RRT implementations find paths quickly in 3 seconds. However, the cover of these two algorithms are high relative to $S^{*} = 0$. The greedy removal strategy outperforms the probabilistic removal strategy because of the induced randomness the sampling strategy adds. Since we use collision counts as measure of the value of a removal, a sampling strategy across this distribution can result in selecting obstacles for removal that are "wrong" (not optimal leading to overall higher cover scores). The repeated probabilistic removal IOR-RRT gets close to the true MCR solution for the reason described in the previous world experiment in addition to the repeated iterations giving the algorithm the opportunity to select the "right" obstacle to remove. 
 
+We gain insight on the performance of the search informed IOR-RRT by looking at its behavior on this world. We verify that it succeeds in finding a low average cover due to repeating the birrt search many times in its first phase. This helps it frequently find a collision-free path. However, when it fails, because there exists a collision-free path, it is able to explore the space mitigating the number of obstacles it needs to remove to succeed, unlike the normal IOR-RRTs.
 
 \section{Worlds with No Collision Free Paths}\label{results:unfeasible}
 This section is used to analyze worlds where no feasible path exists. While these types of worlds are in the minority of planning problems a planner will face, it should be robust to these more rare circumstances. 
 
 \subsection{Two Block World}
-We start our analysis on unfeasible worlds with a simple analog to the minimal obstacle feasible world example from Figure \ref{fig:feasible_world}. The variant can be seen in Figure \ref{fig:two_soda_world}.
+We start our analysis on unfeasible worlds with a simple analog to the minimal obstacle feasible world example from Figure \ref{fig:feasible_world}. The variant can be seen in Figure \ref{fig:two_soda_world_layout}.
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.5\textwidth]{two_soda_world}
+\begin{figure}[!h]
+    \subfloat[Layout\label{fig:two_soda_world_layout}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{two_soda_world}
+    }
+    \hfill
+    \subfloat[Algorithm Performance\label{fig:two_soda_world_graph}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{two_soda_world_graph}
+    }
     \caption{Two Box Unfeasible World}
     \label{fig:two_soda_world}
 \end{figure}
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{@{}llllll@{}}
-\toprule
-Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
-\midrule
-MCR & 100.0 & 0.00 & 10.82 & 6190.77 & 1.06 \\
-RRT & 0.0 & 0.74 & 0.00 & 0.00 & 0.00 \\
-Bidirectional RRT & 0.0 & 3.82 & 0.00 & 0.00 & 0.00 \\
-Greedy IOR-RRT & 100.0 & 0.00 & 1.46 & 5168.13 & 1.96 \\
-Probabilistic IOR-RRT & 100.0 & 0.00 & 1.44 & 5165.11 & 2.54 \\
-Direct Trajectory & 100.0 & 0.00 & 0.04 & 3044.89 & 11.00 \\
-Repeated IOR-RRT & 100.0 & 0.00 & 12.57 & 5120.58 & 1.00 \\
-Search Informed IOR-RRT & 100.0 & 0.00 & 15.91 & 5403.04 & 1.60 \\
-\bottomrule
-\end{tabular}
-\caption{Algorithm Performance on Two Block Unfeasible World}
-\label{tab:two_soda_world}
-\end{table}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.5\textwidth]{two_soda_world}
+%     \caption{Two Box Unfeasible World}
+%     \label{fig:two_soda_world}
+% \end{figure}
 
-Because the RRT and Bidirectional RRT search strategies only work in feasible worlds, it is natural that these two algorithms fail in this world. For the other worlds that are unfeasible, we will omit their performance since they necessarily fail. The optimal path cover in this example is a cover of weight one. We note that in this unfeasible world with only two obstacles, the MCR algorithm takes around 13 seconds before returning a path with a good cover. This has to do with the fundamental MCR algorithm issue of not knowing when to return the found path (since it looks for iteratively better paths than a single, first path). 
+% \begin{table}[h!]
+% \centering
+% \begin{tabular}{@{}llllll@{}}
+% \toprule
+% Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
+% \midrule
+% MCR & 100.0 & 0.00 & 10.82 & 6190.77 & 1.06 \\
+% RRT & 0.0 & 0.74 & 0.00 & 0.00 & 0.00 \\
+% Bidirectional RRT & 0.0 & 3.82 & 0.00 & 0.00 & 0.00 \\
+% Greedy IOR-RRT & 100.0 & 0.00 & 1.46 & 5168.13 & 1.96 \\
+% Probabilistic IOR-RRT & 100.0 & 0.00 & 1.44 & 5165.11 & 2.54 \\
+% Direct Trajectory & 100.0 & 0.00 & 0.04 & 3044.89 & 11.00 \\
+% Repeated IOR-RRT & 100.0 & 0.00 & 12.57 & 5120.58 & 1.00 \\
+% Search Informed IOR-RRT & 100.0 & 0.00 & 15.91 & 5403.04 & 1.60 \\
+% \bottomrule
+% \end{tabular}
+% \caption{Algorithm Performance on Two Block Unfeasible World}
+% \label{tab:two_soda_world}
+% \end{table}
 
-The RRT variant algorithms we propose perform similarly. The direct trajectory, however, finds a path that collides with the top and bottom blocks (can be seen visually as well). Search informed IOR-RRTs outperform any of the basic IOR-RRT options but is outperformed by the repeated IOR-RRT. Additionally there is minimal impact on path lengths from any of the search-based algorithms.
+Because the RRT and Bidirectional RRT search strategies only work in feasible worlds, it is natural that these two algorithms fail in this world. We will omit them from further discussion in the remaining worlds. The optimal path cover in this example is a cover of weight one. We note that in this unfeasible world with only two obstacles, the MCR algorithm takes around 11 seconds before returning a path with a good cover. This has to do with the fundamental MCR algorithm issue of not knowing when to return the found path (since it looks for iteratively better paths than a single, first path). 
+
+The RRT variant algorithms we propose perform similarly to each other as measured by cover. The direct trajectory, however, finds a path that collides with the top and bottom blocks (can be seen visually as well). Search informed IOR-RRTs outperform any of the basic IOR-RRT options but is outperformed by the repeated IOR-RRT. Additionally there is minimal impact on path lengths from any of the search-based algorithms.
 
 \subsection{Cluttered World with Greedy Minimum Cover Path} \label{res:cluttered_world}
 Here we examine the performance of the algorithms on worlds where the best cover paths exist through the direct path from the start to the goal. We would like to understand how the performance of our algorithms changes with the not only the number of obstacles but the location of the best paths.
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.5\textwidth]{cluttered_world}
+\begin{figure}[!h]
+    \subfloat[Layout\label{fig:cluttered_world_layout}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{cluttered_world}
+    }
+    \hfill
+    \subfloat[Algorithm Performance\label{fig:cluttered_world_graph}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{cluttered_world_graph}
+    }
     \caption{Cluttered World With Greedy Path of Minimum Cover}
     \label{fig:cluttered_world}
 \end{figure}
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{@{}llllll@{}}
-\toprule
-Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
-\midrule
-MCR & 100.0 & 0.00 & 116.29 & 4753.26 & 19.85 \\
-Greedy IOR-RRT & 100.0 & 0.00 & 3.38 & 4605.07 & 16.14 \\
-Probabilistic IOR-RRT & 100.0 & 0.00 & 4.59 & 4884.78 & 19.88 \\
-Direct Trajectory & 100.0 & 0.00 & 0.08 & 3597.09 & 36.00 \\
-Repeated IOR-RRT & 100.0 & 0.00 & 44.46 & 4605.78 & 15.98 \\
-Search Informed IOR-RRT & 100.0 & 0.00 & 24.30 & 4688.62 & 16.61 \\
-\bottomrule
-\end{tabular}
-\caption{Algorithm Performance on Cluttered World (With Greedy MCR Path)}
-\label{tab:cluttered_world}
-\end{table}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.5\textwidth]{cluttered_world}
+%     \caption{Cluttered World With Greedy Path of Minimum Cover}
+%     \label{fig:cluttered_world}
+% \end{figure}
 
-Again in Table \ref{tab:cluttered_world} we see that the MCR algorithm suffers heavily from a long running time. This high running time is partially a result of the MCR algorithm being one directional. Even if the $k$ frontier is high enough to find $S^*$, it may not succeed at finding the right connections to build the path resulting in a high cover. Since we use a version of MCR where the exit condition is based on the iteration number relative to the best cover found, the number of iterations we must run stays high causing a higher computation time. Additionally because the obstacle weights are widely distributed the algorithm spends a lot of time searching frontiers that cannot yield better path covers. The MCR algorithm's performance is tied to the size of the cover rather than the number of obstacles in the world, which is a problem in worlds with relatively few obstacles but with different weights. Unfortunately this is the more common scenario.
+% \begin{table}[h!]
+% \centering
+% \begin{tabular}{@{}llllll@{}}
+% \toprule
+% Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
+% \midrule
+% MCR & 100.0 & 0.00 & 116.29 & 4753.26 & 19.85 \\
+% Greedy IOR-RRT & 100.0 & 0.00 & 3.38 & 4605.07 & 16.14 \\
+% Probabilistic IOR-RRT & 100.0 & 0.00 & 4.59 & 4884.78 & 19.88 \\
+% Direct Trajectory & 100.0 & 0.00 & 0.08 & 3597.09 & 36.00 \\
+% Repeated IOR-RRT & 100.0 & 0.00 & 44.46 & 4605.78 & 15.98 \\
+% Search Informed IOR-RRT & 100.0 & 0.00 & 24.30 & 4688.62 & 16.61 \\
+% \bottomrule
+% \end{tabular}
+% \caption{Algorithm Performance on Cluttered World (With Greedy MCR Path)}
+% \label{tab:cluttered_world}
+% \end{table}
 
-The greedy IOR-RRT finds paths with good covers as would be expected from the best path being a greedy path. Since bidirectional search encourages both trees to grow towards each other, it would induce collisions with obstacles in the direct path from the start to the goal. Then the greedy removal strategy would select these obstacles for removal and a good path cover would be found. It is also clear then that the probabilistic removal strategy would lead to on average higher cover paths because it may deviate from the clear greedy path. The search informed algorithms perform the same from a cover perspective as the greedy removal IOR-RRT. Since the space is filled by obstacles, without removing any obstacles there is little space that the search strategy can fill in. Additionally the search informed RRT faces a big penalty in time performance because there does not exist a collision free path; the repeated attempts at looking for collision free paths without gaining additional information incurs no benefits at the expense of time.
+From Figure \ref{fig:cluttered_world_graph} we see that the MCR algorithm suffers heavily from a long running time. This high running time is partially a result of the MCR algorithm being one directional. Even if the $k$ frontier is high enough to find $S^*$, it may not succeed at finding the right connections to build the path resulting in a high cover. Since we use a version of MCR where the exit condition is based on the iteration number relative to the best cover found, the number of iterations we must run stays high causing a higher computation time. Additionally because the obstacle weights are widely distributed the algorithm spends a lot of time searching frontiers that cannot yield better path covers. The MCR algorithm's performance is tied to the size of the cover rather than the number of obstacles in the world, which is a problem in worlds with relatively few obstacles but with different weights. Unfortunately this is a common scenario.
+
+The greedy IOR-RRT finds paths with good covers as would be expected from the best path being a greedy path. Since bidirectional search encourages both trees to grow towards each other, it would induce collisions with obstacles in the direct path from the start to the goal. Then the greedy removal strategy would select these obstacles for removal and a good path cover would be found. It is also clear then that the probabilistic removal strategy would lead to on average higher cover paths because it may deviate from the clear greedy path. The search informed algorithms perform the same from a cover perspective as the greedy removal IOR-RRT. Since the space is filled by obstacles, without removing any obstacles there is little space that the search strategy can fill in. Additionally the search informed RRT faces a big penalty in time performance because there does not exist a collision free path; the repeated attempts at looking for collision free paths results in no additional information at the expense of time.
 
 
 \subsection{Cluttered World with Non-Greedy Minimum Cover Path}
 In this last test we use a world that has the same layout as the previous world but with shifted obstacle weights such that the minimum cover path is no longer greedy but follows the top and left edges. 
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.5\textwidth]{top_light_cluttered_world}
-    \caption{Cluttered World With Non-Greedy Path Of Minimum Cover}
+
+\begin{figure}[!h]
+    \subfloat[Layout\label{fig:top_light_cluttered_world_layout}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{top_light_cluttered_world}
+    }
+    \hfill
+    \subfloat[Algorithm Performance\label{fig:top_light_cluttered_world_graph}]{%
+      \includegraphics[width=0.45\textwidth, height = 6cm]{top_light_cluttered_world_graph}
+    }
+    \caption{Cluttered World With Non-Greedy Path of Minimum Cover}
     \label{fig:top_light_cluttered_world}
 \end{figure}
 
-\begin{table}[h!]
-\centering
-\begin{tabular}{@{}llllll@{}}
-\toprule
-Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
-\midrule
-MCR & 100.0 & 0.00 & 153.48 & 6838.41 & 23.05 \\
-Greedy IOR-RRT & 100.0 & 0.00 & 3.59 & 5352.60 & 24.99 \\
-Probabilistic IOR-RRT & 100.0 & 0.00 & 4.69 & 5428.90 & 23.71 \\
-Direct Trajectory & 100.0 & 0.00 & 0.08 & 3597.09 & 39.00 \\
-Repeated IOR-RRT & 100.0 & 0.00 & 45.84 & 5865.23 & 14.62 \\
-Search Informed IOR-RRT & 100.0 & 0.00 & 24.94 & 5359.50 & 26.50 \\
-\bottomrule
-\end{tabular}
-\caption{Algorithm Performance on Cluttered World (With Non-Greedy MCR Path)}
-\label{tab:top_light_cluttered_world}
-\end{table}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.5\textwidth]{top_light_cluttered_world}
+%     \caption{Cluttered World With Non-Greedy Path Of Minimum Cover}
+%     \label{fig:top_light_cluttered_world}
+% \end{figure}
 
-We see that the greedy removal IOR-RRT is slightly outperformed by the probabilistic removal IOR-RRT. Since the ideal path is no longer along the greedy path from start to goal, the probabilistic removal strategy can succeed at opening up the middle space that the greedy removal strategy will not. Additionally, for the reasons mentioned in \ref{res:cluttered_world}, the first phase of the search informed IOR-RRT does not yield any benefit. The repeated IOR-RRT excels in this world due to the repeated chance to find good paths by opening the right space. Similar to the last world, MCR takes significantly longer than the other algorithms with the repeated IOR-RRT next. While the repeated IOR-RRT finds a cover of almost half the size as the search informed IOR-RRT, it takes 69\% longer than the search informed IOR-RRT, which itself takes notable time. 
+% \begin{table}[h!]
+% \centering
+% \begin{tabular}{@{}llllll@{}}
+% \toprule
+% Algorithm & Success(\%) & Failure Time & Success Time & Path Length & Cover \\
+% \midrule
+% MCR & 100.0 & 0.00 & 153.48 & 6838.41 & 23.05 \\
+% Greedy IOR-RRT & 100.0 & 0.00 & 3.59 & 5352.60 & 24.99 \\
+% Probabilistic IOR-RRT & 100.0 & 0.00 & 4.69 & 5428.90 & 23.71 \\
+% Direct Trajectory & 100.0 & 0.00 & 0.08 & 3597.09 & 39.00 \\
+% Repeated IOR-RRT & 100.0 & 0.00 & 45.84 & 5865.23 & 14.62 \\
+% Search Informed IOR-RRT & 100.0 & 0.00 & 24.94 & 5359.50 & 26.50 \\
+% \bottomrule
+% \end{tabular}
+% \caption{Algorithm Performance on Cluttered World (With Non-Greedy MCR Path)}
+% \label{tab:top_light_cluttered_world}
+% \end{table}
+
+We see that the probabilistic removal IOR-RRT slightly outperforms by the greedy removal IOR-RRT. Since the ideal path is no longer along the greedy path from start to goal, the probabilistic removal strategy can succeed at opening up the middle space that the greedy removal strategy will not. Additionally, for the reasons mentioned in \ref{res:cluttered_world}, the first phase of the search informed IOR-RRT does not yield any benefit. The repeated IOR-RRT excels in this world due to the repeated chance to find good paths by opening the right space. Similar to the last world, MCR takes significantly longer than the other algorithms with the repeated IOR-RRT next. While the repeated IOR-RRT finds a cover of almost half the size as the search informed IOR-RRT, it takes 84\% longer than the search informed IOR-RRT, which itself takes notable time. 
 
 \section{Discussion on Memory Factor Impact}\label{results:memoryfactor}
 This section is dedicated to the impact of the memory factor on the IOR-RRT. Specifically we test the impact using the greedy removal IOR-RRT as the greedy removal strategy generally outperformed the probabilistic removal strategy evidenced by sections \ref{results:feasible}-\ref{results:unfeasible}. We use all memory factors in [0.0, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0].
