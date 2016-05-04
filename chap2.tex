@@ -142,12 +142,14 @@ The pseudocode in Algorithm \ref{alg:mcr} is largely similar to Hauser's origina
 \State $q_d \gets Sample()$
 \State Let $q_n \gets$ \Call{Closest}{$G,k, q_d$}
 \State $q \gets$ \Call{Extend Toward}{$q_n, q_d, \delta, k$}
-\State Let ${q_1, q_2, ..., q_n} \gets$ \Call{Neighbors}{$G,q$}
-\For {$i = 1,2,....n$}
-\If{$d(q_i,q) < \delta$}
-\State Add $q_i \rightarrow q$ to $E$
+\If{$q$ is not $None$}
+    \State Let ${q_1, q_2, ..., q_n} \gets$ \Call{Neighbors}{$G,q$}
+    \For {$i = 1,2,....n$}
+    \If{$d(q_i,q) < \delta$}
+    \State Add $q_i \rightarrow q$ to $E$
+    \EndIf
+    \EndFor
 \EndIf
-\EndFor
 \EndFunction
 \\
 \Function{Closest}{$G,k,q$}
