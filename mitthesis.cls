@@ -183,7 +183,7 @@
 %% `vi' and `upcase' document style options.  Krishna Sethuraman (1990)
 \newcount\vithesis
 \DeclareOption{vi}{\typeout{Course VI/VIII thesis style.}\advance\vithesis by1}
-\vithesis=0
+\vithesis=1
 
 \DeclareOption{upcase}{\typeout{Uppercase cover page.}
 	\gdef\choosecase#1{\uppercase\expandafter{#1}}}
@@ -410,8 +410,7 @@ reserved.\par\permission}}
 %% \copyrightnotice{stuff} to copyright to someone else, or
 %% \copyrightnoticetext{stuff} to specify the exact text of the copyright
 %% notice.
-\ifodd\vithesis \copyrightnoticetext{\copyright\ \@author,
-\uppercase\expandafter{\romannumeral\@degreeyear}.  All rights reserved.\par\permission}
+\ifodd\vithesis \copyrightnoticetext{Copyright \@degreeyear\ \@author.  All rights reserved.\par\permission}
 %% or just
 %%\@degreeyear}}
 \typeout{Copyright given to author,
@@ -437,7 +436,7 @@ reserved.\par\permission}}
 \def\supervisor#1{\setbox\@titlesupervisor\vbox
   {\unvbox\@titlesupervisor \vskip 10pt% plus 1fil minus 1fil
   \def\baselinestretch{1}\large
-  \signature{Certified by}{#1 \\ Thesis Supervisor}}
+  \signature{Certified by}{#1, Thesis Supervisor \\ \@thesisdate}}
   \setbox\@abstractsupervisor\vbox{\unvbox\@abstractsupervisor
   \vskip\baselineskip \def\baselinestretch{1}\@normalsize
   \par\noindent Thesis Supervisor: #1}}
@@ -475,7 +474,7 @@ at the
 \unvbox\@titlesupervisor
 \par
 \vfill
-\signature{Accepted by}{\@chairmanname \\ \@chairmantitle}
+\signature{Accepted by}{\@chairmanname, \@chairmantitle}
 \vfill
 \end{titlepage}}
 
